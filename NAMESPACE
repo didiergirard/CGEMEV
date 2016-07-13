@@ -1,0 +1,6 @@
+#useDynLib(CGEMEV)
+
+# Export all names
+exportPattern(".")
+
+#import(Rcpp)
