@@ -6,4 +6,5 @@ Author: Didier Girard<Didier.Girard@imag.fr>, Remy Drouilhet <Remy.Drouilhet@ima
 Maintainer: Didier Girard<Didier.Girard@imag.fr>
 Description: Alternative of Maximum Likelihood for two parameter Matern Fields.
 License: GPL (>= 2)
-Depends: R (>= 3.0.0) 
+Depends: R (>= 3.0.0), Rcpp (>= 0.9.10)
+LinkingTo: Rcpp,RcppArmadillo

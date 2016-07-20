@@ -9,7 +9,7 @@ ex1.md <- list(
 ex2.md  <- c(ex1.md,list(center=c(0.8, 0.25),radius=0.03568))
 
 # gd=grid.domain
-print(system.time(ex1.gd <- grid.domain(ex1.md,ngrid<-64,Rcpp=FALSE)))
+print(system.time(ex1.gd <- grid.domain(ex1.md,ngrid<-512)))
 #
 #
 cat("gaussian matern creation\n")
