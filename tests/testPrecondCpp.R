@@ -9,7 +9,7 @@ ex1.md <- list(
 ex2.md  <- c(ex1.md,list(center=c(0.8, 0.25),radius=0.03568))
 
 # gd=grid.domain
-print(system.time(ex1.gd <- grid.domain(ex1.md,ngrid<-512)))
+print(system.time(ex1.gd <- grid.domain(ex1.md,ngrid<-64)))
 #
 #
 cat("gaussian matern creation\n")
@@ -36,4 +36,44 @@ print("iciiiiii")
 system.time(print(out <-
 	 fsai11Precond.GEevalOnThetaGrid(z, candidateThetas.Grid, gm$smoothness, ex1.gd ,tolPGC=1e-03)))
 
-plot( candidateThetas.Grid, out@values, type="l")
+plot( candidateThetas.Grid, out$values, type="l")
+
+system.time(print(out <-
+	 fsai11Precond.GEbisectionLogScaleSearch(z,
+		  gm$smoothness, ex1.gd ,tolPGC=1e-03, 1, 100,  1e-04)))
+
+
+			#########################################################
+			####### generation of 100 replicates            #########
+			#######  and  CGEM-EV estimates for each one   ##########
+			bHatEV<-matrix(NA,100)
+			cHatGEEVLogScaleSearch<-matrix(NA,100)
+			nCGiterationsMaxForYLogScaleSearch<-matrix(NA,100)
+			#nCGiterationsMaxForWLogScaleSearch<-matrix(NA,500)
+			ut<-system.time(
+			for(indexReplcitate in 1:100){
+			set.seed(indexReplcitate)  # so that it is reproducible #
+			simulate(gm)
+			z <- gm$look[1:gm$n1,1:gm$n1][!ex1.gd$missing.sites]
+			bEV<-sum(z**2)/ex1.gd$non.missing.number # -1.
+			#
+			# w <- rnorm(n)
+			# w<- c( w)
+			# w <- c( w)*sqrt((n/sum( w *w)))
+			# #
+			out <- fsai11Precond.GEbisectionLogScaleSearch(z,
+	 		  gm$smoothness, ex1.gd ,tolPGC=1e-03, 1, 100,  1e-04)
+			cHatGEEVLogScaleSearch[indexReplcitate]<-
+							bEV*(out$root)**(2*gm$smoothness)
+			nCGiterationsMaxForYLogScaleSearch[indexReplcitate]<-
+				 max(out$niterCGiterationsHistory[,1])
+			# nCGiterationsMaxForWLogScaleSearch[indexReplcitate]<-
+			# 	max(out$niterCGiterationsHistory[,2])
+			#
+			}
+			)
+			ut
+			ctrue<-1.*(1/gm$range)**(2*gm$smoothness)
+			summary(cHatGEEVLogScaleSearch[1:100]/ctrue)
+			sd(cHatGEEVLogScaleSearch[1:100]/ctrue)
+			nCGiterationsMaxForYLogScaleSearch
