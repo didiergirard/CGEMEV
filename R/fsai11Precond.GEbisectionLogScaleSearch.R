@@ -91,7 +91,8 @@ if (f1 > f2)
     }
     xm <- sqrt(x1 * x2)         ################ instead of the mean
 #
-list(root=xm, niterCGiterationsHistory = niterCGiterationsHistory)
+list(root=xm, candidateTethasHistory=candidateTethasHistory,
+	niterCGiterationsHistory = niterCGiterationsHistory)
 }
 ## end of fsai11Precond.GEbisectionLogScaleSearch ####################
 ##########################################################

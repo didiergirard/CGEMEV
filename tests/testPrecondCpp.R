@@ -15,20 +15,21 @@ print(system.time(ex1.gd <- grid.domain(ex1.md,ngrid<-64)))
 cat("gaussian matern creation\n")
 gm <- gaussian.matern(grid.size=ngrid)
 cat("-> done\n")
-set.seed(321)  # so that it is reproducible #
+
 
 cat("simulation and plot\n")
+set.seed(321))  # so that it is reproducible #
 simulate(gm)
-plot(gm)
-cat("-> done\n")
+#plot(gm)
 
 
 # only observed outside the disks:
 z <- gm$look[1:gm$n1,1:gm$n1][!ex1.gd$missing.sites]
-length(z)
+cat("number of observations\n",length(z),"\n")
+plotUncompleteGrid.gaussian.matern(gm,ex1.gd)
 #
 sum(z**2)/ex1.gd$non.missing.number
-
+cat("-> done\n")
 
 candidateThetas.Grid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
 
@@ -43,7 +44,7 @@ system.time(print(out <-
 		  gm$smoothness, ex1.gd ,tolPGC=1e-03, 1, 100,  1e-04)))
 
 
-			#########################################################
+#########################################################
 			####### generation of 100 replicates            #########
 			#######  and  CGEM-EV estimates for each one   ##########
 			bHatEV<-matrix(NA,100)

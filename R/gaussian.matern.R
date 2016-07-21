@@ -30,3 +30,13 @@ plot.gaussian.matern <- function(obj) {
 	trueZ <-obj$look[1:obj$n1,1:obj$n1]
 	image(x1,x2,trueZ)
 }
+
+
+########### plot of the observed values of this realization
+plotUncompleteGrid.gaussian.matern <- function(obj,objGridDomain) {
+	x1 <- x2 <- seq(1, obj$n1, 1)
+	trueCompleteZ <-obj$look[1:obj$n1,1:obj$n1]
+	z <- trueCompleteZ[!objGridDomain$missing.sites]
+	image(x1,x2,	expand.to.fullGrid(grid.size=objGridDomain$n1, z, objGridDomain$missing.sites)
+)
+}
