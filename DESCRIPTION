@@ -4,7 +4,7 @@ Date: 2016-01-07
 Title: Conditional Gibbs Energy Mean - Empirical Variance
 Author: Didier Girard<Didier.Girard@imag.fr>, Remy Drouilhet <Remy.Drouilhet@imag.fr>
 Maintainer: Didier Girard<Didier.Girard@imag.fr>
-Description: Alternative of Maximum Likelihood for two parameter Matern Fields.
+Description: Alternative to Maximum Likelihood for two parameter Matern Fields.
 License: GPL (>= 2)
 Depends: R (>= 3.0.0), Rcpp (>= 0.9.10)
 LinkingTo: Rcpp,RcppArmadillo
