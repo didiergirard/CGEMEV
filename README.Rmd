@@ -70,7 +70,7 @@ for (indexReplcitate in 2:9){
 })
 ```
 
-The following timing is for a macmini i7 2.3GHh :
+The following timing is for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh  :
 ```{r}
 ut   # for the simulation of 8 realisations :
 ```
@@ -128,7 +128,7 @@ for (indexReplcitate in 2:9){
 })
 ```
 
-Timing  for a macmini i7 2.3GHh :
+Timing  for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 ```{r}
 ut   # for computing the estimating equation for 8 realisations :
 ```

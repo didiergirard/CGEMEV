@@ -120,14 +120,14 @@ for (indexReplcitate in 2:9){
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
-The following timing is for a macmini i7 2.3GHh :
+The following timing is for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 
 ``` r
 ut   # for the simulation of 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##   4.385   0.141   6.510
+    ##   4.356   0.107   4.844
 
 Setting the uncomplete lattice
 ------------------------------
@@ -145,7 +145,7 @@ print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)
 ```
 
     ##    user  system elapsed 
-    ##   0.182   0.020   0.617
+    ##   0.190   0.012   0.341
 
 Plotting data
 -------------
@@ -224,14 +224,14 @@ for (indexReplcitate in 2:9){
 
 ![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)![](README_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
-Timing for a macmini i7 2.3GHh :
+Timing for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 
 ``` r
 ut   # for computing the estimating equation for 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##  33.902   2.845  58.050
+    ##  33.333   2.435  37.316
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------
