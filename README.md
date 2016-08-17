@@ -114,7 +114,7 @@ ut   # for the simulation of 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##   4.357   0.133   5.025
+    ##   4.343   0.101   4.733
 
 Setting the uncomplete lattice
 ------------------------------
@@ -132,7 +132,7 @@ print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)
 ```
 
     ##    user  system elapsed 
-    ##   0.185   0.010   0.234
+    ##   0.179   0.008   0.218
 
 Plotting data
 -------------
@@ -158,7 +158,7 @@ z <- fullLattice.nineZs[,indexReplcitate][!ex1WithN1eq48And2missindDisks.gd$miss
 For this realization, let us give the whole output of the function `fsai11Precond.GEevalOnThetaGrid()` :
 
 ``` r
-# choosing the inverse-range values (the theta's) where the estimating funcion is computed:
+# choosing the inverse-range values (the theta's) at which the estimating funcion is computed:
 candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
 
 (out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,                          
@@ -221,7 +221,7 @@ ut   # for computing the estimating equation for 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##  33.492   2.539  38.700
+    ##  33.239   2.398  36.844
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------
