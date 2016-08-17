@@ -17,13 +17,13 @@ Three main functions are used: `gaussian.matern()`, `simulate()`
 and `fsai11Precond.GEevalOnThetaGrid()`,  and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
 These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast 
-computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration,  being obtained via FFT from the standard embedding of the correlation matrix  in a circulant  matrix.
+computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration,  can be obtained via FFT from the standard embedding of the correlation matrix  in a circulant  matrix.
 
 ## Contents
 
 - [Setting the probabilistic model](#Setting-the-probabilistic-model)
-- [Simulating one (or several) realisations](#Simulating-one-(or-several)-realisations)
-- [Plots of the random fields](#plots-of-the-random-fields)
+- [Simulating one realization](#Simulating-one-realisation)
+- [Plot (and save) of several realizations](#plots-(and-save)-of-several-realizations)
 - [Setting the uncomplete lattice](#setting-th-uncomplete-lattice)
 - [Plotting data](#Plotting-data)
 - [Plotting the estimating function](#plotting-the-estimating-function)
@@ -31,28 +31,26 @@ computation of the quadratic form which occurs in the estimating equation is pos
 
 ## Setting the probabilistic model
 
-In this first version of the  `CGEMEV` package, we restrict ourselves to a simple domain [0,1]X[0,1]. For the example here, the simulations and the choice of observed sites are done using a grid 48x48
+In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a grid 48x48 partitioning this domain.
 ```{r }
 library(CGEMEV)
-#
 n1grid<-48
-cat("gaussian matern creation\n")
+# gaussian matern creation
 gm <- gaussian.matern(grid.size=n1grid,smoothness=0.5,range=0.5,factor=2)
-cat("-> done\n")
 ```
-NB: in the previous setting, factor=2 specifies the required extension factor of the observation domain. Indeed for this example the choice factor=1 would have entailed the message "FFT of covariance has negative values" which means that the embedding method (which doubles each length of the considered rectangular domain) would have not worked
+NB: in the previous setting, ''factor=2'' specifies the required extension factor of the observation domain. Indeed for this example the choice ''factor=1'' would entail (when calling `simulate()`) the message "FFT of covariance has negative values" which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
 
-## Simulating one (or several) realisations
+## Simulating one realization
 
+This is simply:
 ```{r }
-cat("simulation and plot\n")
 set.seed(321)  # so that it is reproducible #
 simulate(gm)
 ```
 
-## Plots of the random fields
+## Plot (and save) of several realizations
 
-We can plot (and save), for example, 9 realizations:
+We can plot (and save), the previous realization and, for example, 8 further realizations:
 
 
 ```{r}
@@ -104,11 +102,15 @@ indexReplcitate <- 1
 z <- fullLattice.nineZs[,indexReplcitate][!ex1WithN1eq48And2missindDisks.gd$missing.sites]
 #
 (bEV  <- mean(z**2))
-#
+```
+For this realization, let us give the whole output of the function `fsai11Precond.GEevalOnThetaGrid()` :
+```{r}
+# choosing the inverse-range values (the theta's) where the estimating funcion is computed:
 candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
 
-(out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03) )
-#
+(out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,                          
+grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03)
+)
 #
 #
 set.panel(2,3)

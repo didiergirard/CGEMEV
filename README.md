@@ -8,14 +8,14 @@ The `CGEMEV` R package provides tools for simulating realisations of a stationar
 
 Three main functions are used: `gaussian.matern()`, `simulate()` and `fsai11Precond.GEevalOnThetaGrid()`, and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
-These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration, being obtained via FFT from the standard embedding of the correlation matrix in a circulant matrix.
+These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration, can be obtained via FFT from the standard embedding of the correlation matrix in a circulant matrix.
 
 Contents
 --------
 
 -   [Setting the probabilistic model](#Setting-the-probabilistic-model)
--   [Simulating one (or several) realisations](#Simulating-one-(or-several)-realisations)
--   [Plots of the random fields](#plots-of-the-random-fields)
+-   [Simulating one realization](#Simulating-one-realisation)
+-   [Plot (and save) of several realizations](#plots-(and-save)-of-several-realizations)
 -   [Setting the uncomplete lattice](#setting-th-uncomplete-lattice)
 -   [Plotting data](#Plotting-data)
 -   [Plotting the estimating function](#plotting-the-estimating-function)
@@ -24,7 +24,7 @@ Contents
 Setting the probabilistic model
 -------------------------------
 
-In this first version of the `CGEMEV` package, we restrict ourselves to a simple domain \[0,1\]X\[0,1\]. For the example here, the simulations and the choice of observed sites are done using a grid 48x48
+In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a grid 48x48 partitioning this domain.
 
 ``` r
 library(CGEMEV)
@@ -40,30 +40,17 @@ library(CGEMEV)
     ##     grid
 
 ``` r
-#
 n1grid<-48
-cat("gaussian matern creation\n")
-```
-
-    ## gaussian matern creation
-
-``` r
+# gaussian matern creation
 gm <- gaussian.matern(grid.size=n1grid,smoothness=0.5,range=0.5,factor=2)
-cat("-> done\n")
 ```
 
-    ## -> done
+NB: in the previous setting, ''factor=2'' specifies the required extension factor of the observation domain. Indeed for this example the choice ''factor=1'' would entail (when calling `simulate()`) the message "FFT of covariance has negative values" which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
 
-NB: in the previous setting, factor=2 specifies the required extension factor of the observation domain. Indeed for this example the choice factor=1 would have entailed the message "FFT of covariance has negative values" which means that the embedding method (which doubles each length of the considered rectangular domain) would have not worked
+Simulating one realization
+--------------------------
 
-Simulating one (or several) realisations
-----------------------------------------
-
-``` r
-cat("simulation and plot\n")
-```
-
-    ## simulation and plot
+This is simply:
 
 ``` r
 set.seed(321)  # so that it is reproducible #
@@ -93,10 +80,10 @@ simulate(gm)
     ##  # maps v3.1: updated 'world': all lakes moved to separate new #
     ##  # 'lakes' database. Type '?world' or 'news(package="maps")'.  #
 
-Plots of the random fields
---------------------------
+Plot (and save) of several realizations
+---------------------------------------
 
-We can plot (and save), for example, 9 realizations:
+We can plot (and save), the previous realization and, for example, 8 further realizations:
 
 ``` r
 fullLattice.nineZs<- array(NA,c(n1grid*n1grid,9))
@@ -127,7 +114,7 @@ ut   # for the simulation of 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##   4.332   0.101   4.745
+    ##   4.357   0.133   5.025
 
 Setting the uncomplete lattice
 ------------------------------
@@ -145,7 +132,7 @@ print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)
 ```
 
     ##    user  system elapsed 
-    ##   0.184   0.009   0.275
+    ##   0.185   0.010   0.234
 
 Plotting data
 -------------
@@ -168,11 +155,15 @@ z <- fullLattice.nineZs[,indexReplcitate][!ex1WithN1eq48And2missindDisks.gd$miss
 
     ## [1] 1.817604
 
+For this realization, let us give the whole output of the function `fsai11Precond.GEevalOnThetaGrid()` :
+
 ``` r
-#
+# choosing the inverse-range values (the theta's) where the estimating funcion is computed:
 candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
 
-(out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03) )
+(out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,                          
+grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03)
+)
 ```
 
     ## $values
@@ -199,7 +190,6 @@ candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
 ``` r
 #
 #
-#
 set.panel(2,3)
 ```
 
@@ -222,7 +212,7 @@ for (indexReplcitate in 2:9){
 })
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)![](README_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)![](README_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 Timing for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 
@@ -231,7 +221,7 @@ ut   # for computing the estimating equation for 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##  33.216   2.376  37.112
+    ##  33.492   2.539  38.700
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------
