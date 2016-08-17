@@ -1,21 +1,21 @@
 Alternative to Maximum Likelihood for two-parameter Matern Fields
 ================
 
-Fitting a Matérn covariance to a (possibly noisy) incomplete lattice observation
-================================================================================
+Fitting a Matérn covariance to a (possibly incomplete) lattice observation
+==========================================================================
 
-The `CGEMEV` R package provides tools for simulating realisations of a stationary isotropic Gaussian process when the correlation belongs to the common Matérn family with known regularity index \(\nu \geq 0\) and for estimating the correlation range (also called \`\`decorrelation length'') from one realisation on a (possibly incomplete) lattice. The variance of the field is simply estimated by the empirical variance that will be denoted \(b_{\rm EV}\). Presently the missing regions can be chosen to be several disks.
+The `CGEMEV` R package provides tools for simulating realizations of a stationary isotropic Gaussian process when the correlation belongs to the common Matérn family with known smoothness index \(\nu \geq 0\) and for estimating the correlation range (also called ''decorrelation length'') from one realization on a (possibly incomplete) lattice. The variance of the field is simply estimated by the empirical variance that will be denoted \(b_{EV}\). Presently the missing regions can be chosen to be several disks.
 
 Three main functions are used: `gaussian.matern()`, `simulate()` and `fsai11Precond.GEevalOnThetaGrid()`, and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
-These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration, can be obtained via FFT from the standard embedding of the correlation matrix in a circulant matrix.
+These fonctions can be applied to a quite large grid even on a laptop (for example 512x512, provided the ''extension factor'' required for simulation, see below, is not too big). Indeed quite fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration, can be obtained via FFT from the standard embedding of the correlation matrix in a circulant matrix.
 
 Contents
 --------
 
 -   [Setting the probabilistic model](#Setting-the-probabilistic-model)
 -   [Simulating one realization](#Simulating-one-realisation)
--   [Plot (and save) of several realizations](#plots-(and-save)-of-several-realizations)
+-   [Plotting (and saving) several realizations](#plotting-(and-saving)-several-realizations)
 -   [Setting the uncomplete lattice](#setting-th-uncomplete-lattice)
 -   [Plotting data](#Plotting-data)
 -   [Plotting the estimating function](#plotting-the-estimating-function)
@@ -80,8 +80,8 @@ simulate(gm)
     ##  # maps v3.1: updated 'world': all lakes moved to separate new #
     ##  # 'lakes' database. Type '?world' or 'news(package="maps")'.  #
 
-Plot (and save) of several realizations
----------------------------------------
+Plotting (and saving) several realizations
+------------------------------------------
 
 We can plot (and save), the previous realization and, for example, 8 further realizations:
 
@@ -114,7 +114,7 @@ ut   # for the simulation of 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##   4.343   0.101   4.733
+    ##   4.390   0.137   5.121
 
 Setting the uncomplete lattice
 ------------------------------
@@ -132,7 +132,7 @@ print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)
 ```
 
     ##    user  system elapsed 
-    ##   0.179   0.008   0.218
+    ##   0.187   0.008   0.219
 
 Plotting data
 -------------
@@ -221,7 +221,7 @@ ut   # for computing the estimating equation for 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##  33.239   2.398  36.844
+    ##  33.635   2.569  38.357
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------
