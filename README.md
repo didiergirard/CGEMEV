@@ -8,7 +8,7 @@ The `CGEMEV` R package provides tools for simulating realisations of a stationar
 
 Three main functions are used: `gaussian.matern()`, `simulate()` and `fsai11Precond.GEevalOnThetaGrid()`, and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
-These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration, being obtained via FFT from the standard embedding of in a circulant matrix.
+These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration, being obtained via FFT from the standard embedding of the correlation matrix in a circulant matrix.
 
 Contents
 --------
@@ -127,7 +127,7 @@ ut   # for the simulation of 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##   4.356   0.107   4.844
+    ##   4.332   0.101   4.745
 
 Setting the uncomplete lattice
 ------------------------------
@@ -145,7 +145,7 @@ print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)
 ```
 
     ##    user  system elapsed 
-    ##   0.190   0.012   0.341
+    ##   0.184   0.009   0.275
 
 Plotting data
 -------------
@@ -231,7 +231,7 @@ ut   # for computing the estimating equation for 8 realisations :
 ```
 
     ##    user  system elapsed 
-    ##  33.333   2.435  37.316
+    ##  33.216   2.376  37.112
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------

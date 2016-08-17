@@ -17,7 +17,7 @@ Three main functions are used: `gaussian.matern()`, `simulate()`
 and `fsai11Precond.GEevalOnThetaGrid()`,  and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
 These fonctions can be applied to a quite large grid (for example 512x512) even on a laptop. Indeed very fast 
-computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration,  being obtained via FFT from the standard embedding of  in a circulant  matrix.
+computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, the matrix-vector product, required in each CG iteration,  being obtained via FFT from the standard embedding of the correlation matrix  in a circulant  matrix.
 
 ## Contents
 
