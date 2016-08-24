@@ -15,16 +15,16 @@ Contents
 
 -   [Setting the probabilistic model](#Setting-the-probabilistic-model)
 -   [Simulating one realization](#Simulating-one-realisation)
--   [Plotting (and saving) several realizations](#plotting-(and-saving)-several-realizations)
--   [Setting the uncomplete lattice](#setting-th-uncomplete-lattice)
+-   [Plotting (and saving) several realizations](#Plotting-(and-saving)-several-realizations)
+-   [Setting the uncomplete lattice](#Setting-the-uncomplete-lattice)
 -   [Plotting data](#Plotting-data)
--   [Plotting the estimating function](#plotting-the-estimating-function)
--   [Estimating theta and the micro-ergodic parameter](#estimating-theta-and-the-micro-ergodic-parameter)
+-   [Computing (and plotting) the estimating function at log-equispaced ranges](#Computing-(and-plotting)-the-estimating-function-at-log-equispaced-ranges)
+-   [Estimating theta and the micro-ergodic parameter](#Estimating-theta-and-the-micro-ergodic-parameter)
 
 Setting the probabilistic model
 -------------------------------
 
-In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a grid 48x48 partitioning this domain.
+In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a grid 64x64 partitioning this domain.
 
 ``` r
 library(CGEMEV)
@@ -40,12 +40,12 @@ library(CGEMEV)
     ##     grid
 
 ``` r
-n1grid<-48
+n1grid<-64
 # gaussian matern creation
-gm <- gaussian.matern(grid.size=n1grid,smoothness=0.5,range=0.5,factor=2)
+gm <- gaussian.matern(grid.size=n1grid,smoothness=0.5,range=0.5,factor=3)
 ```
 
-NB: in the previous setting, ''factor=2'' specifies the required extension factor of the observation domain. Indeed for this example the choice ''factor=1'' would entail (when calling `simulate()`) the message "FFT of covariance has negative values" which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
+NB: in the previous setting, ''factor=3'' specifies the required extension factor of the observation domain. Indeed for this example the choice ''factor=1'' or ''factor=2'' would entail (when calling `simulate()`) the message "FFT of covariance has negative values" which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
 
 Simulating one realization
 --------------------------
@@ -83,10 +83,10 @@ simulate(gm)
 Plotting (and saving) several realizations
 ------------------------------------------
 
-We can plot (and save), the previous realization and, for example, 8 further realizations:
+We can plot (and save), the previous realization and, for example, 5 further realizations:
 
 ``` r
-fullLattice.nineZs<- array(NA,c(n1grid*n1grid,9))
+fullLattice.sixZs<- array(NA,c(n1grid*n1grid,6))
 set.panel(2,3)
 ```
 
@@ -94,27 +94,27 @@ set.panel(2,3)
 
 ``` r
 plot(gm)
-fullLattice.nineZs[,1]<-gm$look[1:gm$n1,1:gm$n1]
+fullLattice.sixZs[,1]<-gm$look[1:gm$n1,1:gm$n1]
 ut <- system.time(
-for (indexReplcitate in 2:9){
-  set.seed(321+indexReplcitate)
+for (indexReplcitate in 2:6){
+  set.seed(320+indexReplcitate)
   simulate(gm)
   plot(gm)
-  fullLattice.nineZs[,indexReplcitate]<-gm$look[1:gm$n1,1:gm$n1]
+  fullLattice.sixZs[,indexReplcitate]<-gm$look[1:gm$n1,1:gm$n1]
   # image(x1,x2,matrix(Ztrue, gm1over2range0p5$n1, gm1over2range0p5$n1),asp=1)}
 })
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 The following timing is for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 
 ``` r
-ut   # for the simulation of 8 realisations :
+ut   # for the simulation of 5 realizations :
 ```
 
     ##    user  system elapsed 
-    ##   4.390   0.137   5.121
+    ##   9.552   0.285  10.672
 
 Setting the uncomplete lattice
 ------------------------------
@@ -128,68 +128,71 @@ ex1.md <- list(
     list(center=c(0.278412, 0.228412),radius=0.071365)
 )
 # gd=grid.domain
-print(system.time(ex1WithN1eq48And2missindDisks.gd <- grid.domain(ex1.md,n1grid)))
+print(system.time(ex1WithN1eq64And2missindDisks.gd <- grid.domain(ex1.md,n1grid)))
 ```
 
     ##    user  system elapsed 
-    ##   0.187   0.008   0.219
+    ##   0.246   0.015   0.306
 
 Plotting data
 -------------
 
 TODO
 
-Plotting the estimating function
---------------------------------
+Computing (and plotting) the estimating function at log-equispaced ranges
+-------------------------------------------------------------------------
+
+Choose a grid of candidates for the range parameter (more precisely, for the inverse-range parameter denoted theta) at which the estimating function is computed:
+
+``` r
+candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
+```
 
 Consider the first one of the above realizations, and the naive variance estimator \(b_{\rm EV}\):
 
 ``` r
 # only observed outside the disks:
-#z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq48And2missindDisks.gd$missing.sites]
+#z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq64And2missindDisks.gd$missing.sites]
 indexReplcitate <- 1
-z <- fullLattice.nineZs[,indexReplcitate][!ex1WithN1eq48And2missindDisks.gd$missing.sites]
+z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq64And2missindDisks.gd$missing.sites]
 #
 (bEV  <- mean(z**2))
 ```
 
-    ## [1] 1.817604
+    ## [1] 2.908545
 
 For this realization, let us give the whole output of the function `fsai11Precond.GEevalOnThetaGrid()` :
 
 ``` r
-# choosing the inverse-range values (the theta's) at which the estimating funcion is computed:
-candidateThetas1DGrid <- 1/gm$range * 10**seq(-1.1,1.1,,15)
-
 (out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,nu=gm$smoothness,                          
-grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03)
+grid.domain=ex1WithN1eq64And2missindDisks.gd,tolPGC=1e-03)
 )
 ```
 
     ## $values
     ##             [,1]
-    ##  [1,] 12.0933720
-    ##  [2,]  8.4223872
-    ##  [3,]  5.8659804
-    ##  [4,]  4.0858401
-    ##  [5,]  2.8463340
-    ##  [6,]  1.9834128
-    ##  [7,]  1.3828622
-    ##  [8,]  0.9652463
-    ##  [9,]  0.6753814
-    ## [10,]  0.4751469
-    ## [11,]  0.3384415
-    ## [12,]  0.2482045
-    ## [13,]  0.1942022
-    ## [14,]  0.1730623
-    ## [15,]  0.1892506
+    ##  [1,] 12.1298155
+    ##  [2,]  8.4473393
+    ##  [3,]  5.8829423
+    ##  [4,]  4.0972679
+    ##  [5,]  2.8538536
+    ##  [6,]  1.9881663
+    ##  [7,]  1.3856174
+    ##  [8,]  0.9665227
+    ##  [9,]  0.6753972
+    ## [10,]  0.4738874
+    ## [11,]  0.3357479
+    ## [12,]  0.2434768
+    ## [13,]  0.1865346
+    ## [14,]  0.1608699
+    ## [15,]  0.1702580
     ## 
     ## $niterForY
-    ##  [1] 17 17 16 15 15 14 14 14 13  9 16 19 26 40 66
+    ##  [1] 16 14 14 13 13 13 13 13 14 12 14 17 24 39 59
+
+Let us repeat this computation for the next five data sets obtained from the above realizations, and plot the results:
 
 ``` r
-#
-#
 set.panel(2,3)
 ```
 
@@ -201,27 +204,27 @@ set.panel(2,3)
     abline(h= bEV)
 }
 ut <- system.time(
-for (indexReplcitate in 2:9){
-  z <- fullLattice.nineZs[,indexReplcitate][!ex1WithN1eq48And2missindDisks.gd$missing.sites]
+for (indexReplcitate in 2:6){
+  z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq64And2missindDisks.gd$missing.sites]
   bEV  <- mean(z**2)
   out <- fsai11Precond.GEevalOnThetaGrid(z,candidateThetas1DGrid,
-        nu=gm$smoothness,grid.domain=ex1WithN1eq48And2missindDisks.gd,tolPGC=1e-03)
+        nu=gm$smoothness,grid.domain=ex1WithN1eq64And2missindDisks.gd,tolPGC=1e-03)
   plot(candidateThetas1DGrid, out$values, type="l", 
                  col=1, lty=2,log="x")
     abline(h= bEV)
 })
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)![](README_files/figure-markdown_github/unnamed-chunk-7-2.png)
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Timing for a MacBookPro3,1 Intel Core 2 Duo 2.6GHh :
 
 ``` r
-ut   # for computing the estimating equation for 8 realisations :
+ut   # for computing the estimating equation for 5 realizations :
 ```
 
     ##    user  system elapsed 
-    ##  33.635   2.569  38.357
+    ##  22.582   3.510  30.399
 
 Estimating theta and the micro-ergodic parameter
 ------------------------------------------------
