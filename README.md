@@ -1,6 +1,3 @@
-Untitled
-================
-
 Fitting a Matérn covariance to a (possibly incomplete) lattice observation
 ==========================================================================
 
@@ -31,7 +28,7 @@ Contents
 Setting the probabilistic model
 -------------------------------
 
-In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449). Let us choose the correlation range such that its inverse, denoted *θ*<sup>−1</sup>, satisfies $\\sqrt{2 nu} \\theta^{-1} =0.3$. The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted *ρ*, see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
+In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449). Let us choose the correlation range such that its inverse, denoted *θ*<sup>−1</sup>, satisfies $\\sqrt{2 nu}$ *θ*<sup>−1</sup> =0.3 . The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted *ρ*, see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
 
 ``` r
 library(CGEMEV)
@@ -79,7 +76,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-![](readmeNEWnewNEW128x128nuEq1p0thetaEquiv0p3TolPCG4bandwidth8p5_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 The following timing is for a MacBookAir Intel I5 1.4GHz :
 
@@ -87,7 +84,7 @@ The following timing is for a MacBookAir Intel I5 1.4GHz :
 ut   # for the simulation of 5 realizations :
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##   9.056   0.212   9.289
 
 Setting the uncomplete lattice
@@ -106,7 +103,7 @@ print(system.time(ex1WithN1eq128And2missindDisks.gd <- grid.domain(missing.domai
             smoothness=nu)))
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##   9.018   0.644   9.479
 
 Size of the data set:
@@ -136,7 +133,7 @@ x <- xFull[!ex1WithN1eq128And2missindDisks.gd$missing.sites,]
 plot(x,asp=1, xlim=c(0,1), ylim=c(0,1), pch=".")
 ```
 
-![](readmeNEWnewNEW128x128nuEq1p0thetaEquiv0p3TolPCG4bandwidth8p5_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 Computing (and plotting) the estimating function at log-equispaced ranges
 -------------------------------------------------------------------------
@@ -191,7 +188,7 @@ grid.domain=ex1WithN1eq128And2missindDisks.gd,tolPGC=1e-04)
     ## [13,]  0.07653975
     ## [14,]  0.04898283
     ## [15,]  0.03428200
-    ## 
+    ##
     ## $niterForY
     ##  [1] 21 19 18 18 16 17 23 18 15 11  9  9 12 18 29
 
@@ -215,13 +212,13 @@ for (indexReplcitate in 2:6){
   out <-     fsai11Precond.GEevalOnThetaGridNEW(z, candidateThetas1DGrid,
           gm$smoothness, ex1WithN1eq128And2missindDisks.gd ,tolPGC=1e-04)
 #  
-  plot(candidateThetas1DGrid, out$values, type="l", 
+  plot(candidateThetas1DGrid, out$values, type="l",
                  col=1, lty= "dashed",log="xy")
     abline(h= bEV, lty= "dotted")
 })
 ```
 
-![](readmeNEWnewNEW128x128nuEq1p0thetaEquiv0p3TolPCG4bandwidth8p5_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 Timing for a MacBookAir Intel I5 1.4GHz :
 
@@ -229,7 +226,7 @@ Timing for a MacBookAir Intel I5 1.4GHz :
 ut   # for computing the estimating equation for 5 realizations :
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##  39.261   9.579  48.927
 
 Estimating theta and the micro-ergodic parameter
@@ -263,7 +260,7 @@ for (indexReplcitate in 1: nbReplicates){
 ut
 ```
 
-    ##     user   system  elapsed 
+    ##     user   system  elapsed
     ## 1735.937  414.030 2153.814
 
 ``` r
@@ -313,4 +310,4 @@ den$x <- 10**(den$x)
 plot(den, log="x")
 ```
 
-![](readmeNEWnewNEW128x128nuEq1p0thetaEquiv0p3TolPCG4bandwidth8p5_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
