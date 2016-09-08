@@ -1,10 +1,10 @@
 
 
-grid.domain  <- function(missing.domains,grid.size=256,oversampling.size=2.5,dim=2,...) {
+grid.domain  <- function(missing.domains,grid.size=256,oversampling.size=8.5,dim=2, smoothness=0.5, bandwidth=8.5,...) {
   require(spam)
 	obj <- new.env()
-	obj$missing.domains <- missing.domains # disk only now! TODO: extend to any form of domain
-	obj$n.domains <- length(missing.domains)
+	obj$missing.domains <- missing.domains # disk(s) only now! TODO: extend to any form of domain
+	obj$n.domains <- length(missing.domains)  # number of disk(s)
 
 	obj$dim <- dim
 	if(length(grid.size)==1) grid.size <- rep(grid.size,dim)
@@ -21,13 +21,13 @@ grid.domain  <- function(missing.domains,grid.size=256,oversampling.size=2.5,dim
 
   class(obj) <- "grid.domain"
 
-  ## everything done here!!!
-	update(obj,...)
+  ## everything done here :
+	update(obj, smoothness,...)
 
 	obj
 }
 
-update.grid.domain <-function(obj,Rcpp=TRUE,profile=FALSE) {
+update.grid.domain <-function(obj, smoothness=0.5 , bandwidth=8.5 ,Rcpp=TRUE,profile=FALSE) {
   if(profile) {
     print(system.time(if(Rcpp) missing.sitesCpp.grid.domain(obj) else missing.sites.grid.domain(obj)))
   	print(system.time(if(Rcpp) distant.sitesCpp.grid.domain(obj)  else distant.sites.grid.domain(obj)))
@@ -43,9 +43,15 @@ update.grid.domain <-function(obj,Rcpp=TRUE,profile=FALSE) {
   	non.missing.coords.grid.domain(obj)
   	non.missing.number.grid.domain(obj)
     expand.to.full.grid.domain(obj)
-    if(Rcpp) preconditioningCpp.grid.domain(obj) else preconditioningR.grid.domain(obj)
+    if(Rcpp) {
+    	preconditioningCpp.grid.domain(obj,nu=smoothness,precond.bandwidth= bandwidth)
+    	preconditioningRange10smallerCpp.grid.domain(obj,nu=smoothness,precond.bandwidth= bandwidth)
+    	preconditioningRange100smallerCpp.grid.domain(obj,nu=smoothness,precond.bandwidth= bandwidth)
+    } 
+    else preconditioningR.grid.domain(obj)
   }
 }
+
 
 missing.sites.grid.domain <- function(obj) {
 	n1Xn1  <- obj$n1*obj$n1
@@ -98,7 +104,7 @@ expand.to.full.grid.domain  <- function(obj) {
 }
 
 ## create the sparse matrix (spam class) VERSION 1
-preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)  {
+preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
   library(pdist)
   library(fields)
 
@@ -150,7 +156,7 @@ preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)
     	  gi <- first.precond$g
       } else { 	#print(iz)
   				listPi <- as.vector(pdist(	obj$non.missing.coords[iz,],
-  	#			obj$non.missing.coords[max(1, iz - 2*obj$n1 - 2):min(n, iz + 2*obj$n1 + 2)])@dist)<(2.5/obj$n1)
+  	#			obj$non.missing.coords[max(1, iz - 2*obj$n1 - 2):min(n, iz + 2*obj$n1 + 2)])@dist)<(8.5/obj$n1)
   				obj$non.missing.coords[max(1, iz - 2*obj$n1 - 2): iz,])@dist)<(precond.bandwidth/obj$n1)     #!!!!!!! magic !!!!
   				#
   			  #if (iz <n)  listPi[(iz +1):n] <- FALSE
@@ -185,7 +191,7 @@ preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)
 }
 
 ## VERSION 2
-preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)  {
+preconditioning.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
   library(pdist)
   library(fields)
 
@@ -318,7 +324,7 @@ preconditioning.info <- function(obj,first.precond,first.preconditioning,nu,rang
 }
 
 # VERSION 3 (with preconditioning.info)
-preconditioningR.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)  {
+preconditioningR.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
   library(pdist)
   library(fields)
 
@@ -367,33 +373,34 @@ preconditioningR.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5
 }
 
 # VERSION 4 (with preconditioning_info C++)
-preconditioningCpp.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2.5)  {
+preconditioningCpp.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
   library(pdist)
   library(fields)
 
-  # function with no arguments since all variables inside inherited from the parent environment
-  # only for code more readable
-	first.preconditioning <- function(irow,icol) {
-	iz <- obj$z[irow, icol]
-	listPi <- as.vector(pdist( obj$non.missing.coords[iz,], obj$non.missing.coords)@dist)<(precond.bandwidth/obj$grid.size[1]) #!!!!!!! magic !!!!
-	if (iz < obj$non.missing.number) listPi[(iz +1):obj$non.missing.number] <- FALSE
-	j <- which(listPi)
-	#
-	length.listPi <- length(j)
-	if(length.listPi==1) {
-	i <- iz
-	gi <- 1
-	} else {
-	#subR <- exp(- rdist(obj$non.missing.coords[j,]))
-	subR <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range)
-	vectorEmi <- c(rep(0,length.listPi -1),1)
-	gTildai <- solve(subR, vectorEmi)
-	gi <- gTildai/sqrt(gTildai[length.listPi])
-	}
-	lag.coords.listPi <- round((obj$n1-1)*obj$non.missing.coords[j,])-matrix(c(rep(irow,length.listPi),rep(icol,length.listPi)),ncol=2)
-	list(i=iz,lag.coords.listPi=lag.coords.listPi,g=gi,l=length.listPi)
-	}
-
+	  # function with (almost) no arguments since all variables inside inherited from the parent environment
+	  # only for code more readable
+		first.preconditioning <- function(irow,icol) {
+		iz <- obj$z[irow, icol]
+		listPi <- as.vector(pdist( obj$non.missing.coords[iz,], obj$non.missing.coords)@dist)<(precond.bandwidth/obj$grid.size[1]) #!!!!!!! magic !!!!
+		if (iz < obj$non.missing.number) listPi[(iz +1):obj$non.missing.number] <- FALSE
+		j <- which(listPi)
+		#
+		length.listPi <- length(j)
+		if(length.listPi==1) {
+		i <- iz
+		gi <- 1
+		} else {
+		#subR <- exp(- rdist(obj$non.missing.coords[j,]))
+		subR <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range)
+		# subR2 <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range/10)
+		# subR3 <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range/100)
+		vectorEmi <- c(rep(0,length.listPi -1),1)
+		gTildai <- solve(subR, vectorEmi)
+		gi <- gTildai/sqrt(gTildai[length.listPi])
+		}
+		lag.coords.listPi <- round((obj$n1-1)*obj$non.missing.coords[j,])-matrix(c(rep(irow,length.listPi),rep(icol,length.listPi)),ncol=2)
+		list(i=iz,lag.coords.listPi=lag.coords.listPi,g=gi,l=length.listPi)
+		}
 
   ## init sparse matrix
   sparseG <-  spam(0, obj$non.missing.number, obj$non.missing.number)
@@ -413,4 +420,104 @@ preconditioningCpp.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=2
   # If rowindicesRaw instead of rowpointersRaw
   # sparseG[cbind(as.integer(colindicesRaw), as.integer(rowindicesRaw))] <-  entriesRaw
   obj$sparseG <- sparseG
+}
+
+# idem VERSION 4 above  but with range/10
+preconditioningRange10smallerCpp.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
+  #single replacement : 
+  range  <- range/10	
+  library(pdist)
+  library(fields)
+
+	  # function with (almost) no arguments since all variables inside inherited from the parent environment
+	  # only for code more readable
+		first.preconditioning <- function(irow,icol) {
+		iz <- obj$z[irow, icol]
+		listPi <- as.vector(pdist( obj$non.missing.coords[iz,], obj$non.missing.coords)@dist)<(precond.bandwidth/obj$grid.size[1]) #!!!!!!! magic !!!!
+		if (iz < obj$non.missing.number) listPi[(iz +1):obj$non.missing.number] <- FALSE
+		j <- which(listPi)
+		#
+		length.listPi <- length(j)
+		if(length.listPi==1) {
+		i <- iz
+		gi <- 1
+		} else {
+		#subR <- exp(- rdist(obj$non.missing.coords[j,]))
+		subR <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range)
+		vectorEmi <- c(rep(0,length.listPi -1),1)
+		gTildai <- solve(subR, vectorEmi)
+		gi <- gTildai/sqrt(gTildai[length.listPi])
+		}
+		lag.coords.listPi <- round((obj$n1-1)*obj$non.missing.coords[j,])-matrix(c(rep(irow,length.listPi),rep(icol,length.listPi)),ncol=2)
+		list(i=iz,lag.coords.listPi=lag.coords.listPi,g=gi,l=length.listPi)
+		}
+
+  ## init sparse matrix
+  sparseG <-  spam(0, obj$non.missing.number, obj$non.missing.number)
+  # entriesRaw<-c()
+  # colindicesRaw<-c()
+  # rowpointersRaw <- c(1) #sparseG@rowpointers
+
+  #first.precond <- NULL #found when first condition satisfied
+  #cumlength.listPi <- 1
+
+  obj$tmp4.index <- preconditioning_info(obj,first.preconditioning,nu,range,precond.bandwidth)
+  sparseG@entries <- obj$tmp4.index[[1]]
+  sparseG@colindices <- as.integer(obj$tmp4.index[[2]])
+  sparseG@rowpointers <- as.integer(obj$tmp4.index[[3]])
+
+  # Alternative:
+  # If rowindicesRaw instead of rowpointersRaw
+  # sparseG[cbind(as.integer(colindicesRaw), as.integer(rowindicesRaw))] <-  entriesRaw
+  obj$sparseGusingRange10smaller <- sparseG
+}
+
+# idem VERSION 4 above  but with range/100
+preconditioningRange100smallerCpp.grid.domain <- function(obj,nu=.5,range=1,precond.bandwidth=8.5)  {
+  #single replacement : 
+  range  <- range/100	
+  library(pdist)
+  library(fields)
+
+	  # function with (almost) no arguments since all variables inside inherited from the parent environment
+	  # only for code more readable
+		first.preconditioning <- function(irow,icol) {
+		iz <- obj$z[irow, icol]
+		listPi <- as.vector(pdist( obj$non.missing.coords[iz,], obj$non.missing.coords)@dist)<(precond.bandwidth/obj$grid.size[1]) #!!!!!!! magic !!!!
+		if (iz < obj$non.missing.number) listPi[(iz +1):obj$non.missing.number] <- FALSE
+		j <- which(listPi)
+		#
+		length.listPi <- length(j)
+		if(length.listPi==1) {
+		i <- iz
+		gi <- 1
+		} else {
+		#subR <- exp(- rdist(obj$non.missing.coords[j,]))
+		subR <- Matern(rdist(obj$non.missing.coords[j,]), nu=nu, range=range)
+		vectorEmi <- c(rep(0,length.listPi -1),1)
+		gTildai <- solve(subR, vectorEmi)
+		gi <- gTildai/sqrt(gTildai[length.listPi])
+		}
+		lag.coords.listPi <- round((obj$n1-1)*obj$non.missing.coords[j,])-matrix(c(rep(irow,length.listPi),rep(icol,length.listPi)),ncol=2)
+		list(i=iz,lag.coords.listPi=lag.coords.listPi,g=gi,l=length.listPi)
+		}
+
+  ## init sparse matrix
+  sparseG <-  spam(0, obj$non.missing.number, obj$non.missing.number)
+  # entriesRaw<-c()
+  # colindicesRaw<-c()
+  # rowpointersRaw <- c(1) #sparseG@rowpointers
+
+  #first.precond <- NULL #found when first condition satisfied
+  #cumlength.listPi <- 1
+
+  obj$tmp4.index <- preconditioning_info(obj,first.preconditioning,nu,range,precond.bandwidth)
+  sparseG@entries <- obj$tmp4.index[[1]]
+  sparseG@colindices <- as.integer(obj$tmp4.index[[2]])
+  sparseG@rowpointers <- as.integer(obj$tmp4.index[[3]])
+
+  # Alternative:
+  # If rowindicesRaw instead of rowpointersRaw
+  # sparseG[cbind(as.integer(colindicesRaw), as.integer(rowindicesRaw))] <-  entriesRaw
+  obj$sparseGusingRange100smaller <- sparseG
 }

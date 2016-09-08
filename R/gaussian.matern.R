@@ -17,8 +17,11 @@ simulate.gaussian.matern <- function(obj) {
 	#range parameter =1./10 and the domain is [0, factor]X [0, factor] evaluating the 
 	#field at a sizeGridsimul x sizeGridsimul grid. 
 	#one simulates 1 realization using fctions of fields -package
-	sizeGridsimul<-obj$factor*obj$n1
-	grid <- list( x= seq( 0, obj$factor, length=sizeGridsimul), y= seq(0, obj$factor,length=sizeGridsimul)) 
+	k <- obj$factor
+	sizeGridsimul<-k*obj$n1
+	grid <- list( x= seq( 0, 1+(k-1)*(1+(1/(obj$n1 -1))), length=sizeGridsimul), 
+		 #             y= seq(0, k*(1+(1/(obj$n1 -1))),length=sizeGridsimul)) 
+		           y= seq(0,  1+(k-1)*(1+(1/(obj$n1 -1))),length=sizeGridsimul))
 	#XXXXXX attention en 2016: il faut utiliser theta au lieu de range et matern ds le nom de la fct
 	mic<-matern.image.cov( setup=TRUE, grid=grid, theta=obj$range,smoothness=obj$smoothness)
 	obj$look <- sim.rf(mic)
