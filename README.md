@@ -28,7 +28,7 @@ Contents
 Setting the probabilistic model
 -------------------------------
 
-In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449). Let us choose the correlation range such that its inverse, denoted *θ*<sup>−1</sup>, satisfies $\\sqrt{2 nu}$ *θ*<sup>−1</sup> =0.3 . The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted *ρ*, see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
+In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that it is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449). Let us choose the correlation range such that its inverse, denoted *θ*, satisfies $\\sqrt{2 nu}$ *θ*<sup>−1</sup> =0.3 . The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted *ρ*, see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
 
 ``` r
 library(CGEMEV)
@@ -78,7 +78,7 @@ for (indexReplcitate in 2:6){
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-The following timing is for a MacBookAir Intel I5 1.4GHz :
+The following timing (in seconds) is for a MacBookAir Intel I5 1.4GHz :
 
 ``` r
 ut   # for the simulation of 5 realizations :

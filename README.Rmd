@@ -8,12 +8,12 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE,message = FALSE)
 ```
 
 
-# Fitting a Matérn covariance to a (possibly  incomplete) lattice observation 
+# Fitting a Matérn covariance to a (possibly  incomplete) lattice observation
 
-The   `CGEMEV` R package provides 
+The   `CGEMEV` R package provides
 
 - a simple function for simulating realizations of a stationary isotropic Gaussian process when the correlation belongs to the common Matérn family with smoothness index  *nu > 0*
-- tools for estimating, when *nu* is known,  the correlation  range, also called ''decorrelation length'' (or its inverse that will be denoted *theta*) from one realization on a (possibly incomplete) lattice. 
+- tools for estimating, when *nu* is known,  the correlation  range, also called ''decorrelation length'' (or its inverse that will be denoted *theta*) from one realization on a (possibly incomplete) lattice.
 The variance of the field is simply estimated by the empirical variance that will be denoted *b<sub>EV</sub>*.
 
 These tools implement the estimation method proposed in Girard, D.A., 2016, Asymptotic near-efficiency of the Gibbs-energy and empirical-variance estimating functions for fitting Matérn models I: Densely sampled processes. Statistics and Probability Letters 110, 191-197,   and in the preprint https://hal.archives-ouvertes.fr/hal-00515832 .
@@ -23,7 +23,7 @@ In this first version of `CGEMEV`, the region of missing observations is defined
 Three main functions are used: `gaussian.matern()`, `simulate()`
 and `fsai11Precond.GEevalOnThetaGrid()`,  and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
 
-These R-fonctions can be applied to a quite large grid even on a laptop (for example 512x512, provided the ''extension factor'' required for simulation, see below, is not too big). Indeed quite fast 
+These R-fonctions can be applied to a quite large grid even on a laptop (for example 512x512, provided the ''extension factor'' required for simulation, see below, is not too big). Indeed quite fast
 computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration,  can be obtained via FFT from the standard embedding of the correlation matrix  in a circulant  matrix.
 
 ## Contents
@@ -39,7 +39,7 @@ computation of the quadratic form which occurs in the estimating equation is pos
 ## Setting the probabilistic model
 
 In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449).
-Let us choose the correlation  range such that its inverse, denoted $\theta^{-1}$, satisfies $\sqrt{2 nu} \theta^{-1} =0.3$.
+Let us choose the correlation  range such that its inverse, denoted $\theta$, satisfies $\sqrt{2 nu} \theta^{-1} =0.3$.
 The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
 
 
@@ -81,7 +81,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-The following timing is for a MacBookAir Intel I5 1.4GHz  :
+The following timing (in seconds) is for a MacBookAir Intel I5 1.4GHz  :
 ```{r}
 ut   # for the simulation of 5 realizations :
 ```
@@ -159,7 +159,7 @@ for (indexReplcitate in 2:6){
   out <- 	 fsai11Precond.GEevalOnThetaGridNEW(z, candidateThetas1DGrid,
 		  gm$smoothness, ex1WithN1eq128And2missindDisks.gd ,tolPGC=1e-04)
 #  
-  plot(candidateThetas1DGrid, out$values, type="l", 
+  plot(candidateThetas1DGrid, out$values, type="l",
                  col=1, lty= "dashed",log="xy")
     abline(h= bEV, lty= "dotted")
 })
