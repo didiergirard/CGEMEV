@@ -40,7 +40,7 @@ gm <- gaussian.matern(grid.size=n1grid,smoothness=nu,
                       range=effectiveRange/sqrt(2*nu),factor=3)
 ```
 
-NB: in the previous setting, `factor=3` specifies the required extension factor (assumed, for simplicity, to be an integer) of the observation domain. Indeed for this example the choice `factor=1` or `factor=2` would entail (when calling \`simulate()) the message “FFT of covariance has negative values” which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
+NB: in the previous setting, `factor=3` specifies the required extension factor (assumed, for simplicity, to be an integer) of the observation domain. Indeed for this example the choice `factor=1` or `factor=2` would entail (when calling `simulate()`) the message “FFT of covariance has negative values” which means that generating a realization via the classical embedding method (which doubles each length of the considered rectangular domain) would not work.
 
 Simulating one realization
 --------------------------
