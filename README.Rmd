@@ -38,7 +38,7 @@ computation of the quadratic form which occurs in the estimating equation is pos
 
 ## Setting the probabilistic model
 
-In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449).
+In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that this a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449).
 Let us choose the correlation  range such that its inverse, denoted $\theta$, satisfies $\sqrt{2 nu} \theta^{-1} =0.3$.
 The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
 
