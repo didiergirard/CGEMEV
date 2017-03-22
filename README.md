@@ -79,7 +79,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-![](TESTJUNK_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 The following timing (in seconds) is for a MacMini (late2012) I7 2.3GHz :
 
@@ -144,7 +144,7 @@ x <- xFull[!ex1WithN1eq128And5missingDisks.gd$missing.sites,]
 plot(x,asp=1, xlim=c(0,1), ylim=c(0,1), pch=".")
 ```
 
-![](TESTJUNK_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 Computing (and plotting) the estimating function at log-equispaced ranges
 -------------------------------------------------------------------------
@@ -229,7 +229,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-![](TESTJUNK_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 Timing for a MacMini (late2012) I7 2.3GHz :
 
@@ -348,4 +348,4 @@ plot(density((cHatCGEMEV-cTrue)/cTrue),main="")
 title(" N errors (cHatCGEMEV-cTrue)/cTrue")
 ```
 
-![](TESTJUNK_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
