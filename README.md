@@ -31,7 +31,7 @@ Contents
 Setting the probabilistic model
 -------------------------------
 
-In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =1` (recall that is a widely used correlation following the seminal paper by Peter Whittle in Biometrika, 41(3–4), 1954 pp. 434–449). Let us choose the correlation range such that its inverse, denoted \(\theta\), satisfies \(\sqrt{2 nu} \theta^{-1} =0.2\). The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.2 (the formulae for Matern correlations often use this quantity denoted \(\rho\), see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
+In this first version of the `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =0.5` (that is the widely used exponential correlation). Let us choose the correlation range such that its inverse, denoted \(\theta\), satisfies \(\sqrt{2 nu} \theta^{-1} =0.2\). The resulting correlation function can then be considered as one with an ‘’effective range’‘ equal to 0.2 (the formulae for Matern correlations often use this quantity denoted \(\rho\), see <https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function> ).
 
 ``` r
 library(CGEMEV)
@@ -87,7 +87,7 @@ The following timing (in seconds) is for a MacMini (late2012) I7 2.3GHz :
 ut   # for the simulation of 5 realizations :
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##   2.374   0.042   2.439
 
 Setting the uncomplete lattice
@@ -114,7 +114,7 @@ print(system.time(ex1WithN1eq128And5missingDisks.gd <- grid.domain(missing.domai
             smoothness=nu)))
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##  10.136   0.894  10.668
 
 Size of the data set:
@@ -199,7 +199,7 @@ grid.domain=ex1WithN1eq128And5missingDisks.gd,tolPGC=1e-04)
     ## [13,] 0.2719343
     ## [14,] 0.2167601
     ## [15,] 0.1783596
-    ## 
+    ##
     ## $niterForY
     ##  [1] 17 14 14 14 13 13 13 11  9  7  6  7  9 13 19
 
@@ -237,7 +237,7 @@ Timing for a MacMini (late2012) I7 2.3GHz :
 ut   # for computing the estimating equation for 5 realizations :
 ```
 
-    ##    user  system elapsed 
+    ##    user  system elapsed
     ##  22.427   5.935  28.454
 
 Estimating theta and the micro-ergodic parameter from noisy observations with (unknown) SNR=1000
@@ -249,7 +249,7 @@ For solving the CGEMEV estimating equation in theta, a specific bisection method
 sigma2Process<- 1000
 sigma2Noise <- 1.
 bTrue <- sigma2Process/sigma2Noise
-  
+
 nbReplicates <- 200
 bHatEV<-matrix(NA,nbReplicates)
 cHatCGEMEV<-matrix(NA, nbReplicates)
@@ -283,7 +283,7 @@ for (indexReplcitate in 1: nbReplicates){
 ut
 ```
 
-    ##     user   system  elapsed 
+    ##     user   system  elapsed
     ## 1580.074  452.702 2040.524
 
 ``` r
