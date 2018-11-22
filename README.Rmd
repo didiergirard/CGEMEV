@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE,message = FALSE)
 
 # Fitting a Matérn covariance to a (possibly  incomplete) lattice observation
 
-The   `CGEMEV` R package provides
+The   `CGEMEV` R package (dependent on the fields, spam and RCPP packages) provides
 
 - a simple function for simulating realizations of a stationary isotropic Gaussian process when the correlation belongs to the common Matérn family with smoothness index  *nu > 0*
 - tools for estimating, when *nu* is known,  the correlation  range, also called ''decorrelation length'' (or its inverse that will be denoted *theta*) from one realization on a (possibly incomplete) lattice.
