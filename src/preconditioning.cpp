@@ -9,7 +9,7 @@ double matern(double d, double range=1, double nu=.5) {
     d  = d / range; //iterator
     if(fabs(d) < 1e-10) d=1e-10;//+test abs < 1e-10
 
-    double con = pow(2,nu - 1) * gamma(nu);
+    double con = pow(2.0,nu - 1) * gamma(nu);
     con = 1./con;
     return con * pow(d,nu) * R::bessel_k(d, nu, 1);
 }
@@ -201,7 +201,7 @@ List preconditioning_info(Environment obj,Function first_preconditioning, double
 
 // [[Rcpp::export]]
 bool belong_to_disk(NumericVector x,NumericVector center, double rad2) {
-  return (sum(pow(x-center,2)) < rad2);
+  return (sum(pow(x-center,2.0)) < rad2);
 }
 
 // [[Rcpp::export]]
@@ -215,7 +215,7 @@ LogicalVector missing_sites_grid_domain(Environment obj) {
     for(int id=0;id<n_doms;id++) {
       List md=missing_domains[id];
       NumericVector center=md["center"];
-      double rad2=pow(md["radius"],2);
+      double rad2=md["radius"] * md["radius"];
       for(int ip=0;ip<n1Xn1;ip++) if(!missing_sites[ip]) missing_sites[ip]=belong_to_disk(coords(ip,_),center,rad2);
     }
     return missing_sites;
