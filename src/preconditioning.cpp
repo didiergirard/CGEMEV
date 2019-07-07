@@ -215,7 +215,7 @@ LogicalVector missing_sites_grid_domain(Environment obj) {
     for(int id=0;id<n_doms;id++) {
       List md=missing_domains[id];
       NumericVector center=md["center"];
-      double rad2=md["radius"] * md["radius"];
+      double rad2=pow(md["radius"],2.0);
       for(int ip=0;ip<n1Xn1;ip++) if(!missing_sites[ip]) missing_sites[ip]=belong_to_disk(coords(ip,_),center,rad2);
     }
     return missing_sites;
