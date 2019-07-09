@@ -1,6 +1,7 @@
 title: "Example4"
-output: html_document: keep_md: true
+output: rmarkdown::github_document
 ---
+<!-- README.md is generated from README.Rmd -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE,message=FALSE,fig.path = "README_figs/README-")
@@ -20,7 +21,8 @@ These tools implement the estimation method proposed in Girard, D.A., 2016, Asym
 In this first version of `CGEMEV`, the region of missing observations is defined as a union of  disks.
 
 Three main functions are used: `gaussian.matern()`, `simulate()`
-and `fsai11Precond.GEevalOnThetaGrid()`,  and a fourth function `grid.domain()` is required to precompute preconditioning sparse matrices.
+and `fsai11Precond.GEevalOnThetaGrid()`,    `fsaiThreePrecond.fastRandzedCGEMEVbisectionLogScaleSearch()` and a fifth function `grid.domain()` is required to precompute preconditioning sparse matrices.
+
 
 These R-fonctions can be applied to a quite large grid even on a laptop (for example 512x512, provided the ''extension factor'' required for simulation, see below, is not too big). Indeed quite fast
 computation of the quadratic form which occurs in the estimating equation is possible by using a conjugate-gradient (CG) solver preconditioned by a classical factored sparse approximate inverse (FSAI) preconditioning, since the matrix-vector product, required in each CG iteration,  can be obtained via FFT from the standard embedding of the correlation matrix  in a circulant  matrix.
