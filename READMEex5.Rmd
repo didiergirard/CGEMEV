@@ -1,4 +1,4 @@
-title: "Example4"
+title: "Example5"
 output: 
   html_document:
     keep_md: true
@@ -43,7 +43,7 @@ computation of the quadratic form which occurs in the estimating equation is pos
 
 In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 108x108 grid which partitions this domain. We consider the example `nu =0.5` (that this the widely used exponential correlation).
 Let us choose the correlation  range such that its inverse, denoted $\theta$, satisfies $\sqrt{2 nu} \theta^{-1} =0.166667$.
-The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
+The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to 0.0833 (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
 
 
 ```{r }
@@ -52,7 +52,7 @@ library(pdist)
 n1grid <- 108
 # gaussian matern creation
 nu <-0.5
-effectiveRange <- 0.166667
+effectiveRange <- 0.0833333
 gm <- gaussian.matern(grid.size=n1grid,smoothness=nu,
                       range=effectiveRange/sqrt(2*nu),factor=2)
 ```
@@ -278,7 +278,7 @@ set.panel(2,2)
 den <- density(log(sqrt(2*nu)/thetaHatCGEMEV,10))
 den$x <- 10**(den$x)
 plot(den, log="x",main="")
-title("CGEMEVestimates of the range (=0.166)")
+title("CGEMEVestimates of the range (=0.083)")
 plot(density((cHatCGEMEV-cTrue)/cTrue),main="")
 title(" N errors (cHatCGEMEV-cTrue)/cTrue")
 ```
@@ -427,7 +427,7 @@ set.panel(2,2)
 den <- density(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10),na.rm=TRUE)
 den$x <- 10**(den$x)
 plot(den, log="x",main="")
-title("CGEMEVVEZestimates of the range (=0.166)")
+title("CGEMEVVEZestimates of the range (=0.083)")
 plot(density((cHatCGEMEVsigma2NoiseVEZ-cTrue)/cTrue,na.rm=TRUE),main="")
 title(" N errors (cHatCGEMEVVEZ-cTrue)/cTrue")
 ```

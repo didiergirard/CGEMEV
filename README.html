@@ -377,7 +377,7 @@ $(document).ready(function () {
 </div>
 
 
-<p>title: “Example4” output: rmarkdown::github_document — <!-- README.md is generated from README.Rmd --></p>
+<p>title: “Example4” output: html_document: keep_md: true — <!-- README.md is generated from README.Rmd --></p>
 <div id="fitting-a-matern-covariance-to-a-possibly-incomplete-lattice-observation" class="section level1">
 <h1>Fitting a Matérn covariance to a (possibly incomplete) lattice observation</h1>
 <p>The <code>CGEMEV</code> R package (dependent on the fields, spam, SpatialVx and RCPP packages) provides</p>
@@ -439,7 +439,7 @@ for (indexReplcitate in 2:6){
 <p>The following timing (in seconds) is for a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :</p>
 <pre class="r"><code>ut   # for the simulation of 5 realizations :</code></pre>
 <pre><code>##    user  system elapsed 
-##   1.236   0.042   1.296</code></pre>
+##   1.237   0.041   1.297</code></pre>
 </div>
 <div id="setting-the-uncomplete-lattice" class="section level2">
 <h2>Setting the uncomplete lattice</h2>
@@ -462,7 +462,7 @@ list(center=listOfCenters[5,],radius= listOfHalfDiameters[5])
 print(system.time(ex1WithN1eq108And5missindDisks.gd &lt;- grid.domain(missing.domains=ex1.md,grid.size=n1grid,
             smoothness=nu)))</code></pre>
 <pre><code>##    user  system elapsed 
-##   5.269   0.040   5.339</code></pre>
+##   5.146   0.030   5.189</code></pre>
 <p>Size of the data set:</p>
 <pre class="r"><code>(nObs &lt;- dim(ex1WithN1eq108And5missindDisks.gd$sparseG)[1])</code></pre>
 <pre><code>## [1] 10274</code></pre>
@@ -538,7 +538,7 @@ for (indexReplcitate in 2:6){
 <p>Timing for a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB</p>
 <pre class="r"><code>ut   # for computing the estimating equation for 5 realizations :</code></pre>
 <pre><code>##    user  system elapsed 
-##  11.523   1.073  12.669</code></pre>
+##  11.659   1.100  12.815</code></pre>
 </div>
 <div id="estimating-theta-and-the-micro-ergodic-parameter-from-noisy-observations-with-unknown-snr-332-known-sigmanoise" class="section level2">
 <h2>Estimating theta and the micro-ergodic parameter from noisy observations with (unknown) SNR <span class="math inline">\(= 33^2\)</span>, known <em>sigma<sub>NOISE</sub></em></h2>
@@ -579,8 +579,8 @@ for (indexReplcitate in 1: nbReplicates){
 })</code></pre>
 <p>Timing for these 50 replicates, using a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :</p>
 <pre class="r"><code>ut</code></pre>
-<pre><code>##    user  system elapsed 
-## 374.615  33.199 409.169</code></pre>
+<pre><code>##     user   system  elapsed 
+##  371.624   32.995 1802.730</code></pre>
 <p>Summary of the results:</p>
 <pre class="r"><code>print(c(&quot;log10 of true range =&quot;,log(sqrt(2*nu)*gm$range,10)))</code></pre>
 <pre><code>## [1] &quot;log10 of true range =&quot; &quot;-0.778150381795548&quot;</code></pre>
@@ -703,8 +703,8 @@ for (indexReplcitate in 1: nbReplicates){
 <pre><code>## [1] 75</code></pre>
 <p>Timing for these replicates (including the extrapolations of each empirical varogriam), using a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :</p>
 <pre class="r"><code>ut</code></pre>
-<pre><code>##    user  system elapsed 
-## 289.103  26.132 316.320</code></pre>
+<pre><code>##     user   system  elapsed 
+##  282.697   25.336 5031.813</code></pre>
 <p>Summary of the results:</p>
 <pre class="r"><code>print(c(&quot;log10 of true range =&quot;,log(sqrt(2*nu)*gm$range,10)))</code></pre>
 <pre><code>## [1] &quot;log10 of true range =&quot; &quot;-0.778150381795548&quot;</code></pre>
