@@ -1,12 +1,12 @@
-title: "Example4"
+---
+title: "testCGEMEV"
 output: 
   html_document:
     keep_md: true
 ---
-<!-- README.md is generated from README.Rmd -->
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE,message=FALSE,fig.path = "README_figs/README-")
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
@@ -43,7 +43,7 @@ computation of the quadratic form which occurs in the estimating equation is pos
 
 In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 108x108 grid which partitions this domain. We consider the example `nu =0.5` (that this the widely used exponential correlation).
 Let us choose the correlation  range such that its inverse, denoted $\theta$, satisfies $\sqrt{2 nu} \theta^{-1} =0.166667$.
-The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to 0.3 (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
+The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to $0.166667$ (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
 
 
 ```{r }
@@ -85,7 +85,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-The following timing (in seconds) is for a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :
+The following timing (in seconds) is for a iMac (Mid-2017) 	4.2 GHz Core i7 (I7-7700K) :
 ```{r}
 ut   # for the simulation of 5 realizations :
 ```
@@ -185,15 +185,17 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-Timing  for a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB
+Timing with a iMac (Mid-2017) 	4.2 GHz I7-7700K (using one core) :
 ```{r}
 ut   # for computing the estimating equation for 5 realizations :
 ```
 
 
+
+
 ## Estimating theta and the micro-ergodic parameter from noisy observations with (unknown) SNR $= 33^2$, known *sigma<sub>NOISE</sub>* 
 
-For solving the CGEMEV estimating equation in theta, a specific bisection method has been elaborated, since it is useful to use "historical" results (more precisely the starting point of the PCG iterations at a given theta is chosen as the solution from the linear-solve associated with the previously considered theta); indeed a classic use of the `uniroot` R-fonction would be much slower. Let us analyse N=50 datasets *Y<sub>k</sub>*, *k=1,...,50* each one being *Y<sub>k</sub> = Z<sub>k</sub> +epsilon<sub>k</sub> *, where *epsilon<sub>k</sub>* is a field of white normal noise; they are simulated such that the true SNR (i.e. var(Z)/var(noise)) $= 33^2$. Only *nu* and the variance of the noise (or nugget-effect variance, $=1$) are assumed known.
+For solving the CGEMEV estimating equation in theta, a specific bisection method has been elaborated, since it is useful to use "historical" results (more precisely the starting point of the PCG iterations at a given theta is chosen as the solution from the linear-solve associated with the previously considered theta); indeed a classic use of the `uniroot` R-fonction would be much slower. Let us analyse N=100 datasets *Y<sub>k</sub>*, *k=1,...,100* each one being *Y<sub>k</sub> = Z<sub>k</sub> +epsilon<sub>k</sub> *, where *epsilon<sub>k</sub>* is a field of white normal noise; they are simulated such that the true SNR (i.e. var(Z)/var(noise)) $= 33^2$. Only *nu* and the variance of the noise (or nugget-effect variance, $=1$) are assumed known.
 
 ```{r}
 sigma2Process<- 33^2
@@ -221,7 +223,7 @@ for (indexReplcitate in 1: nbReplicates){
           sigma2Noise,y,
           w,
           gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04,
-        0.2,50, tolBis=1e-05)
+          0.2,50, tolBis=1e-05)
 
 #  
   thetaHatCGEMEV[indexReplcitate]<- (out$root)
@@ -233,7 +235,7 @@ for (indexReplcitate in 1: nbReplicates){
 ```
 
 
-Timing  for these 50 replicates, using a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :
+Timing  for these 100 replicates, with a iMac (Mid-2017) 	4.2 GHz I7-7700K (using one core) :
 ```{r}
 ut
 ```
@@ -288,146 +290,3 @@ title(" N errors (cHatCGEMEV-cTrue)/cTrue")
 
 
 
-
-
-## Estimating theta and the micro-ergodic parameter from noisy observations with (unknown) SNR $= 33^2$, unknown *sigma<sub>NOISE</sub>*: CGEM-EV-VEZ method 
-
-
-In a first stage, the variance of the noise (or nugget-effect), whose true value $=1$, is  estimated  by extrapolating at zero the classical semi-variogram (using maximum lag set to 3). THe second stage is a simple "plugin" of this variance in CGEM-EV in place of the true variance :
-
-```{r}
-#################################################################
-## definition of sig2noiseByVariogExtrapolAtZeroNew #############
-#################################################################
-library(SpatialVx)
-#help(structurogram.matrix)
-sig2noiseByVariogExtrapolAtZeroNew <- function(y,n1grid,n2grid,
-maxLag=5)
-{#  missingPositions have zero value
-  	tmp <- array(y,c(n1grid,n2grid))
-  #
-	outWithMissing<-structurogram.matrix(tmp,zero.out=TRUE,R=maxLag)
-	variog<-outWithMissing$vgram
-	lag<-outWithMissing$d
-	lag2<-lag^2
-	quadratic.model <-lm(variog ~ lag + lag2)
-	#
-	sig2noiseVEZ <-quadratic.model$coefficients[1]
-#
-sig2noiseVEZ
-}
-## end of sig2noiseByVariogExtrapolAtZero ################
-##########################################################
-```
-
-```{r}
-failureOfVEZ<-matrix(FALSE,nbReplicates)
-```
-
-
-```{r}
-sigma2Process<- 33^2
-sigma2Noise <- 1.
-bTrue <- sigma2Process/sigma2Noise
-
-nbReplicates <-100
-bHatEVsigma2NoiseVEZ<-matrix(NA,nbReplicates)
-cHatCGEMEVsigma2NoiseVEZ<-matrix(NA, nbReplicates)
-thetaHatCGEMEVsigma2NoiseVEZ<-matrix(NA, nbReplicates)
-nCGiterationsMaxForYsigma2NoiseVEZ<-matrix(NA, nbReplicates)
-sigma2NoiseVEZ<-matrix(NA, nbReplicates)
-
-#
-maxLag <-3
-ut <- system.time(
-for (indexReplcitate in 1: nbReplicates){
-  set.seed(720+indexReplcitate)
-  simulate(gm)
-  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
-  y <-  sqrt(bTrue)* z +  c(rnorm(nObs))
-# compute bHatEVsigma2NoiseVEZ
-  Yrepl<-rep(NA,gm$n1*gm$n1)
-      Yrepl[!ex1WithN1eq108And5missindDisks.gd$missing.sites] <- y
-      minOfimageMinus1 <- min(Yrepl,na.rm=TRUE)-1
-      YreplOffset<-Yrepl-rep(minOfimageMinus1,gm$n1*gm$n1)
-      YreplOffsetWithZeroInsteadNA <- YreplOffset
-      YreplOffsetWithZeroInsteadNA[is.na(Yrepl)] <-0
-      estimation <- 
-        sig2noiseByVariogExtrapolAtZeroNew(YreplOffsetWithZeroInsteadNA,gm$n1,gm$n1,maxLag=maxLag)
-      #
-      lowerBound <- 10**(-12)*mean(y**2)    
-      sigma2NoiseVEZ[indexReplcitate] <- max(c(lowerBound,estimation),na.rm=TRUE)
-  if (sigma2NoiseVEZ[indexReplcitate]==lowerBound) failureOfVEZ[indexReplcitate] <- TRUE
-    #
-  else
-  {bEV  <- ( mean(y**2)-sigma2NoiseVEZ[indexReplcitate] )/ sigma2NoiseVEZ[indexReplcitate]
-    if (bEV <0) {
-            break}
-    w <-  c(rnorm(nObs))
-    out <-     fsaiThreePrecond.fastRandzedCGEMEVbisectionLogScaleSearch(
-           sigma2NoiseVEZ[indexReplcitate] ,y,
-          w,
-          gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04,
-        0.2,50, tolBis=1e-05)
-   #
-   #  
-   thetaHatCGEMEVsigma2NoiseVEZ[indexReplcitate] <- (out$root)
-   cHatCGEMEVsigma2NoiseVEZ[indexReplcitate]<-
-        ( mean(y**2)-sigma2NoiseVEZ[indexReplcitate] ) * (out$root)**(2*gm$smoothness)
-   #
-   nCGiterationsMaxForYsigma2NoiseVEZ[indexReplcitate]<-
-                 max(out$niterCGiterationsHistory)
-  }
-})
-```
-Number of non-failure of VEZ
-```{r}
-(numberOfNonFailureOfVEZ <- sum(failureOfVEZ==FALSE))
-```
-Timing  for these replicates (including the extrapolations of each empirical varogriam), using a MacBookPro 13inch 2018 - Intel I5 2.3GHz - ram8GB :
-```{r}
-ut
-```
-
-Summary of the results:
-
-```{r}
-print(c("log10 of true range =",log(sqrt(2*nu)*gm$range,10)))
-```
-
-```{r}
-summary(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10))
-```
-
-
-```{r}
-cTrue <-  bTrue*(1/gm$range)**(2*gm$smoothness)
-summary(cHatCGEMEVsigma2NoiseVEZ/cTrue)
-```
-
-
-
-```{r}
-sd(cHatCGEMEVsigma2NoiseVEZ/cTrue,na.rm=TRUE)
-```
-
-
-This sd can be compared to the CR lower bound for the case known theta and no-noise
-```{r}
-sqrt(2/length(z))
-```
-
-Let us plot an estimate of the density of the CGEM-EV-VEZ estimates of the effective range, and of the density of the relative errors in the CGEM-EV-VEZ estimates of the microergodic-parameter cTrue:
-
-```{r, echo=FALSE}
-set.panel(2,2)
-```
-
-```{r}
-den <- density(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10),na.rm=TRUE)
-den$x <- 10**(den$x)
-plot(den, log="x",main="")
-title("CGEMEVVEZestimates of the range (=0.166)")
-plot(density((cHatCGEMEVsigma2NoiseVEZ-cTrue)/cTrue,na.rm=TRUE),main="")
-title(" N errors (cHatCGEMEVVEZ-cTrue)/cTrue")
-```
