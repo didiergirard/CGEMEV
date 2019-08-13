@@ -39,7 +39,7 @@ computation of the quadratic form which occurs in the estimating equation is pos
 
 ## Setting the probabilistic model
 
-In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 108x108 grid which partitions this domain. We consider the example `nu =0.5` (that this the widely used exponential correlation).
+In this first version of the  `CGEMEV` package, for simplicity, we restrict the spatial domain to be the unit square (0,1)X(0,1). For the example here, the simulations and the choice of observed sites are done using a 128x128 grid which partitions this domain. We consider the example `nu =0.5` (that this the widely used exponential correlation).
 Let us choose the correlation  range such that its inverse, denoted $\theta$, satisfies $\sqrt{2 nu} \theta^{-1} =0.166667$.
 The resulting correlation function can then be considered as one with an  ‘’effective range’‘ equal to $0.166667$ (the formulae for Matern correlations often use this quantity denoted $\rho$, see https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function ).
 
@@ -66,7 +66,7 @@ library(CGEMEV)
 
 ```r
 library(pdist)
-n1grid <- 108
+n1grid <- 128
 # gaussian matern creation
 nu <-0.5
 effectiveRange <- 0.166667
@@ -161,7 +161,7 @@ ut   # for the simulation of 5 realizations :
 
 ```
 ##    user  system elapsed 
-##   0.875   0.017   0.905
+##   0.982   0.019   1.015
 ```
 
 
@@ -185,13 +185,13 @@ list(center=listOfCenters[4,],radius= listOfHalfDiameters[4]),
 list(center=listOfCenters[5,],radius= listOfHalfDiameters[5])
 )
 # gd=grid.domain
-print(system.time(ex1WithN1eq108And5missindDisks.gd <- grid.domain(missing.domains=ex1.md,grid.size=n1grid,
+print(system.time(ex1WithN1eq128And5missindDisks.gd <- grid.domain(missing.domains=ex1.md,grid.size=n1grid,
             smoothness=nu)))
 ```
 
 ```
 ##    user  system elapsed 
-##   3.719   0.267   3.825
+##   4.379   0.304   4.504
 ```
 
 
@@ -203,20 +203,20 @@ print(system.time(ex1WithN1eq108And5missindDisks.gd <- grid.domain(missing.domai
 Size of the data set:
 
 ```r
-(nObs <- dim(ex1WithN1eq108And5missindDisks.gd$sparseG)[1])
+(nObs <- dim(ex1WithN1eq128And5missindDisks.gd$sparseG)[1])
 ```
 
 ```
-## [1] 10274
+## [1] 14431
 ```
 Average width of the sparse preconditioner:
 
 ```r
-length(ex1WithN1eq108And5missindDisks.gd$sparseG) / dim(ex1WithN1eq108And5missindDisks.gd$sparseG)[1]
+length(ex1WithN1eq128And5missindDisks.gd$sparseG) / dim(ex1WithN1eq128And5missindDisks.gd$sparseG)[1]
 ```
 
 ```
-## [1] 64.51041
+## [1] 72.06645
 ```
 
 ## Plotting observation sites
@@ -225,7 +225,7 @@ Each dataset is made up of the observations of one realization of the previous t
 
 ```r
 xFull<- (1./n1grid)*matrix( c(rep(1: n1grid, n1grid),rep(1: n1grid,each= n1grid)), ncol=2)
-x <- xFull[!ex1WithN1eq108And5missindDisks.gd$missing.sites,]
+x <- xFull[!ex1WithN1eq128And5missindDisks.gd$missing.sites,]
 plot(x,asp=1, xlim=c(0,1), ylim=c(0,1), pch=".")
 ```
 
@@ -253,45 +253,45 @@ Consider the first one of the above realizations, and the naive variance estimat
 
 ```r
 # only observed outside the disks:
-#z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+#z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq128And5missindDisks.gd$missing.sites]
 indexReplcitate <- 1
-z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq128And5missindDisks.gd$missing.sites]
 #
 (bEV  <- mean(z**2))
 ```
 
 ```
-## [1] 1.565748
+## [1] 1.535706
 ```
 For this dataset `z`, let us give the whole output of the function `fsai11Precond.GEevalOnThetaGrid()` :
 
 ```r
 (out <- fsai11Precond.GEevalOnThetaGridNEW(z,candidateThetas1DGrid,nu=gm$smoothness,                          
-grid.domain=ex1WithN1eq108And5missindDisks.gd,tolPGC=1e-04)
+grid.domain=ex1WithN1eq128And5missindDisks.gd,tolPGC=1e-04)
 )
 ```
 
 ```
 ## $values
 ##            [,1]
-##  [1,] 6.1436905
-##  [2,] 4.7225957
-##  [3,] 3.6303922
-##  [4,] 2.7910355
-##  [5,] 2.1460644
-##  [6,] 1.6505654
-##  [7,] 1.2700368
-##  [8,] 0.9780007
-##  [9,] 0.7541657
-## [10,] 0.5830346
-## [11,] 0.4528530
-## [12,] 0.3548433
-## [13,] 0.2826814
-## [14,] 0.2321890
-## [15,] 0.2012737
+##  [1,] 6.1235805
+##  [2,] 4.7069899
+##  [3,] 3.6182450
+##  [4,] 2.7815080
+##  [5,] 2.1385032
+##  [6,] 1.6444457
+##  [7,] 1.2649374
+##  [8,] 0.9735590
+##  [9,] 0.7500493
+## [10,] 0.5789036
+## [11,] 0.4483112
+## [12,] 0.3493698
+## [13,] 0.2755327
+## [14,] 0.2222467
+## [15,] 0.1868012
 ## 
 ## $niterForY
-##  [1] 13 10 10 10 10 13 10  8  7  6  6  8 12 17 20
+##  [1] 16 14 14 13 13 14 11  9  7  6  6  8 11 17 20
 ```
 Let us repeat this computation for the five next data sets obtained from the above realizations, and plot the results:
 
@@ -310,10 +310,10 @@ set.panel(2,3)
 }
 ut <- system.time(
 for (indexReplcitate in 2:6){
-  z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+  z <- fullLattice.sixZs[,indexReplcitate][!ex1WithN1eq128And5missindDisks.gd$missing.sites]
   bEV  <- mean(z**2)
   out <- 	 fsai11Precond.GEevalOnThetaGridNEW(z, candidateThetas1DGrid,
-		  gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04)
+		  gm$smoothness, ex1WithN1eq128And5missindDisks.gd ,tolPGC=1e-04)
 #  
   plot(candidateThetas1DGrid, out$values, type="l",
                  col=1, lty= "dashed",log="xy")
@@ -331,7 +331,7 @@ ut   # for computing the estimating equation for 5 realizations :
 
 ```
 ##    user  system elapsed 
-##   8.842   0.512   9.384
+##  10.950   0.775  11.753
 ```
 
 
@@ -355,9 +355,9 @@ nCGiterationsMaxForY<-matrix(NA, nbReplicates)
 #
 ut <- system.time(
 for (indexReplcitate in 1: nbReplicates){
-  set.seed(720+indexReplcitate)
+  set.seed(520+indexReplcitate)
   simulate(gm)
-  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq128And5missindDisks.gd$missing.sites]
   y <-  sqrt(bTrue)* z +  c(rnorm(nObs))
 #
   bEV  <- ( mean(y**2)-sigma2Noise ) / sigma2Noise
@@ -367,7 +367,7 @@ for (indexReplcitate in 1: nbReplicates){
   out <-     fsaiThreePrecond.fastRandzedCGEMEVbisectionLogScaleSearch(
           sigma2Noise,y,
           w,
-          gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04,
+          gm$smoothness, ex1WithN1eq128And5missindDisks.gd ,tolPGC=1e-04,
           0.2,50, tolBis=1e-05)
 
 #  
@@ -388,7 +388,7 @@ ut
 
 ```
 ##    user  system elapsed 
-## 291.473  17.082 309.054
+## 361.480  25.167 387.098
 ```
 
 Summary of the results:
@@ -409,12 +409,12 @@ summary(log(sqrt(2*nu)/thetaHatCGEMEV,10))
 
 ```
 ##        V1         
-##  Min.   :-1.0056  
-##  1st Qu.:-0.8566  
-##  Median :-0.7785  
-##  Mean   :-0.7744  
-##  3rd Qu.:-0.6998  
-##  Max.   :-0.5164
+##  Min.   :-1.0545  
+##  1st Qu.:-0.8525  
+##  Median :-0.7886  
+##  Mean   :-0.7817  
+##  3rd Qu.:-0.7186  
+##  Max.   :-0.4458
 ```
 
 
@@ -426,12 +426,12 @@ summary(cHatCGEMEV/cTrue)
 
 ```
 ##        V1        
-##  Min.   :0.9652  
-##  1st Qu.:0.9916  
-##  Median :1.0012  
-##  Mean   :1.0017  
-##  3rd Qu.:1.0114  
-##  Max.   :1.0489
+##  Min.   :0.9658  
+##  1st Qu.:0.9932  
+##  Median :1.0007  
+##  Mean   :0.9996  
+##  3rd Qu.:1.0068  
+##  Max.   :1.0273
 ```
 
 
@@ -442,7 +442,7 @@ sd(cHatCGEMEV/cTrue)
 ```
 
 ```
-## [1] 0.0143593
+## [1] 0.01195334
 ```
 
 
@@ -453,7 +453,7 @@ sqrt(2/length(z))
 ```
 
 ```
-## [1] 0.01395228
+## [1] 0.01177245
 ```
 
 Let us plot an estimate of the density of the CGEMEV estimates of the effective range, and of the density of the relative errors in the CGEMEV estimates of the microergodic-parameter cTrue:
@@ -495,13 +495,6 @@ title(" N errors (cHatCGEMEV-cTrue)/cTrue")
 In a first stage, the variance of the noise (or nugget-effect), whose true value $=1$, is  estimated  by extrapolating at zero the classical semi-variogram (using maximum lag set to 3); this estimate is stored in  `sigma2NoiseVEZ`  (this method was proposed in Matthias Katzfuss and
 Noel Cressie. Bayesian hierarchical spatio‐temporal smoothing for very large datasets. Environmetrics. February 2012. pp 94-107). The second stage is a simple "plugin" of `sigma2NoiseVEZ` in CGEM-EV in place of the true variance :
 
-
-```r
-#################################################################
-## definition of sig2noiseByVariogExtrapolAtZeroNew #############
-#################################################################
-library(SpatialVx)
-```
 
 ```
 ## Loading required package: spatstat
@@ -598,27 +591,6 @@ library(SpatialVx)
 ##     grad, hessian
 ```
 
-```r
-#help(structurogram.matrix)
-sig2noiseByVariogExtrapolAtZeroNew <- function(y,n1grid,n2grid,
-maxLag=5)
-{#  missingPositions have zero value
-  	tmp <- array(y,c(n1grid,n2grid))
-  #
-	outWithMissing<-structurogram.matrix(tmp,zero.out=TRUE,R=maxLag)
-	variog<-outWithMissing$vgram
-	lag<-outWithMissing$d
-	lag2<-lag^2
-	quadratic.model <-lm(variog ~ lag + lag2)
-	#
-	sig2noiseVEZ <-quadratic.model$coefficients[1]
-#
-sig2noiseVEZ
-}
-## end of sig2noiseByVariogExtrapolAtZero ################
-##########################################################
-```
-
 
 ```r
 nbReplicates <-100
@@ -643,13 +615,13 @@ sigma2NoiseVEZ<-matrix(NA, nbReplicates)
 maxLag <-3
 ut <- system.time(
 for (indexReplcitate in 1: nbReplicates){
-  set.seed(720+indexReplcitate)
+  set.seed(520+indexReplcitate)
   simulate(gm)
-  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq128And5missindDisks.gd$missing.sites]
   y <-  sqrt(bTrue)* z +  c(rnorm(nObs))
   # compute bHatEVsigma2NoiseVEZ
   Yrepl<-rep(NA,gm$n1*gm$n1)
-      Yrepl[!ex1WithN1eq108And5missindDisks.gd$missing.sites] <- y
+      Yrepl[!ex1WithN1eq128And5missindDisks.gd$missing.sites] <- y
       minOfimageMinus1 <- min(Yrepl,na.rm=TRUE)-1
       YreplOffset<-Yrepl-rep(minOfimageMinus1,gm$n1*gm$n1)
       YreplOffsetWithZeroInsteadNA <- YreplOffset
@@ -669,7 +641,7 @@ for (indexReplcitate in 1: nbReplicates){
     out <-     fsaiThreePrecond.fastRandzedCGEMEVbisectionLogScaleSearch(
            sigma2NoiseVEZ[indexReplcitate] ,y,
           w,
-          gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04,
+          gm$smoothness, ex1WithN1eq128And5missindDisks.gd ,tolPGC=1e-04,
         0.2,50, tolBis=1e-05)
    #
    #  
@@ -689,7 +661,7 @@ Number of non-failure of VEZ
 ```
 
 ```
-## [1] 75
+## [1] 78
 ```
 Timing  for these replicates (including the extrapolations of each empirical varogriam), using 
 a iMac (Mid-2017) 	4.2 GHz I7-7700K (using one core)
@@ -701,7 +673,7 @@ ut
 
 ```
 ##    user  system elapsed 
-## 225.918  14.253 240.570
+## 295.924  20.114 316.445
 ```
 
 Summary of the results:
@@ -722,13 +694,13 @@ summary(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10))
 
 ```
 ##        V1         
-##  Min.   :-1.0056  
-##  1st Qu.:-0.8835  
-##  Median :-0.7937  
-##  Mean   :-0.7884  
-##  3rd Qu.:-0.7053  
-##  Max.   :-0.5182  
-##  NA's   :25
+##  Min.   :-1.0652  
+##  1st Qu.:-0.8435  
+##  Median :-0.7859  
+##  Mean   :-0.7769  
+##  3rd Qu.:-0.7150  
+##  Max.   :-0.4500  
+##  NA's   :22
 ```
 
 
@@ -740,13 +712,13 @@ summary(cHatCGEMEVsigma2NoiseVEZ/cTrue)
 
 ```
 ##        V1        
-##  Min.   :0.9813  
-##  1st Qu.:1.0025  
-##  Median :1.0151  
-##  Mean   :1.0351  
-##  3rd Qu.:1.0393  
-##  Max.   :1.2527  
-##  NA's   :25
+##  Min.   :0.9692  
+##  1st Qu.:0.9973  
+##  Median :1.0124  
+##  Mean   :1.0169  
+##  3rd Qu.:1.0230  
+##  Max.   :1.1698  
+##  NA's   :22
 ```
 
 
@@ -757,7 +729,7 @@ sd(cHatCGEMEVsigma2NoiseVEZ/cTrue,na.rm=TRUE)
 ```
 
 ```
-## [1] 0.05687254
+## [1] 0.03453066
 ```
 
 
@@ -768,7 +740,7 @@ sqrt(2/length(z))
 ```
 
 ```
-## [1] 0.01395228
+## [1] 0.01177245
 ```
 
 Let us plot an estimate of the density of the CGEM-EV-VEZ estimates of the effective range, and of the density of the relative errors in the CGEM-EV-VEZ estimates of the microergodic-parameter cTrue:
