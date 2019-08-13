@@ -1,5 +1,5 @@
 ---
-title: "testCGEMEV"
+title: "README"
 output: 
   html_document:
     keep_md: true
@@ -151,7 +151,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-![](testCGEMEV_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 The following timing (in seconds) is for a iMac (Mid-2017) 	4.2 GHz Core i7 (I7-7700K) :
 
@@ -161,7 +161,7 @@ ut   # for the simulation of 5 realizations :
 
 ```
 ##    user  system elapsed 
-##   0.869   0.016   0.897
+##   0.875   0.017   0.905
 ```
 
 
@@ -191,7 +191,7 @@ print(system.time(ex1WithN1eq108And5missindDisks.gd <- grid.domain(missing.domai
 
 ```
 ##    user  system elapsed 
-##   3.737   0.285   3.842
+##   3.719   0.267   3.825
 ```
 
 
@@ -229,7 +229,7 @@ x <- xFull[!ex1WithN1eq108And5missindDisks.gd$missing.sites,]
 plot(x,asp=1, xlim=c(0,1), ylim=c(0,1), pch=".")
 ```
 
-![](testCGEMEV_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 
 
@@ -321,7 +321,7 @@ for (indexReplcitate in 2:6){
 })
 ```
 
-![](testCGEMEV_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 Timing with a iMac (Mid-2017) 	4.2 GHz I7-7700K (using one core) :
 
@@ -331,7 +331,7 @@ ut   # for computing the estimating equation for 5 realizations :
 
 ```
 ##    user  system elapsed 
-##   8.900   0.514   9.451
+##   8.842   0.512   9.384
 ```
 
 
@@ -388,7 +388,7 @@ ut
 
 ```
 ##    user  system elapsed 
-## 295.370  16.312 312.686
+## 291.473  17.082 309.054
 ```
 
 Summary of the results:
@@ -477,17 +477,320 @@ plot(den, log="x",main="")
 title("CGEMEVestimates of the range (=0.166)")
 ```
 
-![](testCGEMEV_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 ```r
 plot(density((cHatCGEMEV-cTrue)/cTrue),main="")
 title(" N errors (cHatCGEMEV-cTrue)/cTrue")
 ```
 
-![](testCGEMEV_files/figure-html/unnamed-chunk-23-2.png)<!-- -->
+![](README_files/figure-html/unnamed-chunk-23-2.png)<!-- -->
 
 
 
 
+## Estimating theta and the micro-ergodic parameter from noisy observations with (unknown) SNR $= 33^2$, unknown *sigma<sub>NOISE</sub>*: CGEM-EV-VEZ method 
 
 
+In a first stage, the variance of the noise (or nugget-effect), whose true value $=1$, is  estimated  by extrapolating at zero the classical semi-variogram (using maximum lag set to 3); this estimate is stored in  `sigma2NoiseVEZ`  (this method was proposed in Matthias Katzfuss and
+Noel Cressie. Bayesian hierarchical spatio‐temporal smoothing for very large datasets. Environmetrics. February 2012. pp 94-107). The second stage is a simple "plugin" of `sigma2NoiseVEZ` in CGEM-EV in place of the true variance :
+
+
+```r
+#################################################################
+## definition of sig2noiseByVariogExtrapolAtZeroNew #############
+#################################################################
+library(SpatialVx)
+```
+
+```
+## Loading required package: spatstat
+```
+
+```
+## Loading required package: spatstat.data
+```
+
+```
+## Loading required package: nlme
+```
+
+```
+## Loading required package: rpart
+```
+
+```
+## 
+## spatstat 1.56-1       (nickname: 'Invisible Friend') 
+## For an introduction to spatstat, type 'beginner'
+```
+
+```
+## 
+## Note: R version 3.5.1 (2018-07-02) is more than 9 months old; we strongly recommend upgrading to the latest version
+```
+
+```
+## Loading required package: smoothie
+```
+
+```
+## Loading required package: smatr
+```
+
+```
+## Loading required package: turboEM
+```
+
+```
+## Loading required package: doParallel
+```
+
+```
+## Loading required package: foreach
+```
+
+```
+## Loading required package: iterators
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## Loading required package: numDeriv
+```
+
+```
+## Loading required package: quantreg
+```
+
+```
+## Loading required package: SparseM
+```
+
+```
+## 
+## Attaching package: 'SparseM'
+```
+
+```
+## The following object is masked from 'package:spam':
+## 
+##     backsolve
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     backsolve
+```
+
+```
+## 
+## Attaching package: 'turboEM'
+```
+
+```
+## The following objects are masked from 'package:numDeriv':
+## 
+##     grad, hessian
+```
+
+```r
+#help(structurogram.matrix)
+sig2noiseByVariogExtrapolAtZeroNew <- function(y,n1grid,n2grid,
+maxLag=5)
+{#  missingPositions have zero value
+  	tmp <- array(y,c(n1grid,n2grid))
+  #
+	outWithMissing<-structurogram.matrix(tmp,zero.out=TRUE,R=maxLag)
+	variog<-outWithMissing$vgram
+	lag<-outWithMissing$d
+	lag2<-lag^2
+	quadratic.model <-lm(variog ~ lag + lag2)
+	#
+	sig2noiseVEZ <-quadratic.model$coefficients[1]
+#
+sig2noiseVEZ
+}
+## end of sig2noiseByVariogExtrapolAtZero ################
+##########################################################
+```
+
+
+```r
+nbReplicates <-100
+failureOfVEZ<-matrix(FALSE,nbReplicates)
+```
+
+
+
+```r
+sigma2Process<- 33^2
+sigma2Noise <- 1.
+bTrue <- sigma2Process/sigma2Noise
+
+
+bHatEVsigma2NoiseVEZ<-matrix(NA,nbReplicates)
+cHatCGEMEVsigma2NoiseVEZ<-matrix(NA, nbReplicates)
+thetaHatCGEMEVsigma2NoiseVEZ<-matrix(NA, nbReplicates)
+nCGiterationsMaxForYsigma2NoiseVEZ<-matrix(NA, nbReplicates)
+sigma2NoiseVEZ<-matrix(NA, nbReplicates)
+
+#
+maxLag <-3
+ut <- system.time(
+for (indexReplcitate in 1: nbReplicates){
+  set.seed(720+indexReplcitate)
+  simulate(gm)
+  z <- gm$look[1:gm$n1,1:gm$n1][!ex1WithN1eq108And5missindDisks.gd$missing.sites]
+  y <-  sqrt(bTrue)* z +  c(rnorm(nObs))
+  # compute bHatEVsigma2NoiseVEZ
+  Yrepl<-rep(NA,gm$n1*gm$n1)
+      Yrepl[!ex1WithN1eq108And5missindDisks.gd$missing.sites] <- y
+      minOfimageMinus1 <- min(Yrepl,na.rm=TRUE)-1
+      YreplOffset<-Yrepl-rep(minOfimageMinus1,gm$n1*gm$n1)
+      YreplOffsetWithZeroInsteadNA <- YreplOffset
+      YreplOffsetWithZeroInsteadNA[is.na(Yrepl)] <-0
+      estimation <- 
+        sig2noiseByVariogExtrapolAtZeroNew(YreplOffsetWithZeroInsteadNA,gm$n1,gm$n1,maxLag=maxLag)
+      #
+      lowerBound <- 10**(-12)*mean(y**2)    
+      sigma2NoiseVEZ[indexReplcitate] <- max(c(lowerBound,estimation),na.rm=TRUE)
+  if (sigma2NoiseVEZ[indexReplcitate]==lowerBound) failureOfVEZ[indexReplcitate] <- TRUE
+    #
+  else
+  {bEV  <- ( mean(y**2)-sigma2NoiseVEZ[indexReplcitate] )/ sigma2NoiseVEZ[indexReplcitate]
+    if (bEV <0) {
+            break}
+    w <-  c(rnorm(nObs))
+    out <-     fsaiThreePrecond.fastRandzedCGEMEVbisectionLogScaleSearch(
+           sigma2NoiseVEZ[indexReplcitate] ,y,
+          w,
+          gm$smoothness, ex1WithN1eq108And5missindDisks.gd ,tolPGC=1e-04,
+        0.2,50, tolBis=1e-05)
+   #
+   #  
+   thetaHatCGEMEVsigma2NoiseVEZ[indexReplcitate] <- (out$root)
+   cHatCGEMEVsigma2NoiseVEZ[indexReplcitate]<-
+        ( mean(y**2)-sigma2NoiseVEZ[indexReplcitate] ) * (out$root)**(2*gm$smoothness)
+   #
+   nCGiterationsMaxForYsigma2NoiseVEZ[indexReplcitate]<-
+                 max(out$niterCGiterationsHistory)
+  }
+})
+```
+Number of non-failure of VEZ
+
+```r
+(numberOfNonFailureOfVEZ <- sum(failureOfVEZ==FALSE))
+```
+
+```
+## [1] 75
+```
+Timing  for these replicates (including the extrapolations of each empirical varogriam), using 
+a iMac (Mid-2017) 	4.2 GHz I7-7700K (using one core)
+
+
+```r
+ut
+```
+
+```
+##    user  system elapsed 
+## 225.918  14.253 240.570
+```
+
+Summary of the results:
+
+
+```r
+print(c("log10 of true range =",log(sqrt(2*nu)*gm$range,10)))
+```
+
+```
+## [1] "log10 of true range =" "-0.778150381795548"
+```
+
+
+```r
+summary(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10))
+```
+
+```
+##        V1         
+##  Min.   :-1.0056  
+##  1st Qu.:-0.8835  
+##  Median :-0.7937  
+##  Mean   :-0.7884  
+##  3rd Qu.:-0.7053  
+##  Max.   :-0.5182  
+##  NA's   :25
+```
+
+
+
+```r
+cTrue <-  bTrue*(1/gm$range)**(2*gm$smoothness)
+summary(cHatCGEMEVsigma2NoiseVEZ/cTrue)
+```
+
+```
+##        V1        
+##  Min.   :0.9813  
+##  1st Qu.:1.0025  
+##  Median :1.0151  
+##  Mean   :1.0351  
+##  3rd Qu.:1.0393  
+##  Max.   :1.2527  
+##  NA's   :25
+```
+
+
+
+
+```r
+sd(cHatCGEMEVsigma2NoiseVEZ/cTrue,na.rm=TRUE)
+```
+
+```
+## [1] 0.05687254
+```
+
+
+This sd can be compared to the CR lower bound for the case known theta and no-noise
+
+```r
+sqrt(2/length(z))
+```
+
+```
+## [1] 0.01395228
+```
+
+Let us plot an estimate of the density of the CGEM-EV-VEZ estimates of the effective range, and of the density of the relative errors in the CGEM-EV-VEZ estimates of the microergodic-parameter cTrue:
+
+
+```
+## plot window will lay out plots in a 2 by 2 matrix
+```
+
+
+```r
+den <- density(log(sqrt(2*nu)/thetaHatCGEMEVsigma2NoiseVEZ,10),na.rm=TRUE)
+den$x <- 10**(den$x)
+plot(den, log="x",main="")
+title("CGEMEVVEZestimates of the range (=0.166)")
+```
+
+![](README_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+
+```r
+plot(density((cHatCGEMEVsigma2NoiseVEZ-cTrue)/cTrue,na.rm=TRUE),main="")
+title(" N errors (cHatCGEMEVVEZ-cTrue)/cTrue")
+```
+
+![](README_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
